@@ -40,7 +40,6 @@ public:
 private:
 	double* m_pData; // the pointer to the array memory
 	int m_nSize; // the size of the array
-	int m_nMax;
 
 private:
 	void Init(); // initilize the array

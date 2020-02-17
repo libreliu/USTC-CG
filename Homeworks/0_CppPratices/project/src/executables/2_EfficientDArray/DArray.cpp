@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdio>
 #include <stdexcept>
+#include <cassert>
 
 /* Policy:
    PushBack & InsertAt - reserve m_nSize when full
@@ -19,6 +20,7 @@ DArray::DArray() : m_nSize(0), m_pData(nullptr), m_nMax(0) {
 
 // set an array with default values
 DArray::DArray(int nSize, double dValue) {
+	assert(this->m_nSize <= this->m_nMax);
 	if (nSize < 0) {
 		throw std::out_of_range("nSize < 0");
 	}
@@ -35,6 +37,7 @@ DArray::DArray(int nSize, double dValue) {
 }
 
 DArray::DArray(const DArray& arr) {
+	assert(arr.m_nSize <= arr.m_nMax);
 	if (arr.m_nSize == 0) {
 		this->m_nSize = 0;
 		this->m_pData = nullptr;
@@ -57,6 +60,7 @@ DArray::~DArray() {
 
 // allocate enough memory
 void DArray::Reserve(int nSize) {
+	assert(this->m_nSize <= this->m_nMax);
 	if (nSize <= m_nMax)
 		return;
 
@@ -71,6 +75,7 @@ void DArray::Reserve(int nSize) {
 
 // display the elements of the array
 void DArray::Print() const {
+	assert(this->m_nSize <= this->m_nMax);
 	printf("[");
 	for (int i = 0; i < m_nSize; i++) {
 		printf("%lf", m_pData[i]);
@@ -87,6 +92,7 @@ void DArray::Init() {
 
 // free the array
 void DArray::Free() {
+	assert(this->m_nSize <= this->m_nMax);
 	if (m_nSize == 0)
 		return;
 
@@ -102,6 +108,7 @@ int DArray::GetSize() const {
 // expanded area has *uninitializd value*
 // always shrink/expand
 void DArray::SetSize(int nSize) {
+	assert(this->m_nSize <= this->m_nMax);
 	if (nSize < 0)
 		throw std::out_of_range("nSize < 0");
 
@@ -141,6 +148,7 @@ void DArray::SetSize(int nSize) {
 
 // get an element at an index
 const double& DArray::GetAt(int nIndex) const {
+	assert(this->m_nSize <= this->m_nMax);
 	if (nIndex >= m_nSize || nIndex < 0) {
 		throw std::out_of_range("nIndex out of range");
 	}
@@ -150,6 +158,7 @@ const double& DArray::GetAt(int nIndex) const {
 
 // set the value of an element 
 void DArray::SetAt(int nIndex, double dValue) {
+	assert(this->m_nSize <= this->m_nMax);
 	if (nIndex >= m_nSize || nIndex < 0) {
 		throw std::out_of_range("nIndex out of range");
 	}
@@ -173,20 +182,17 @@ void DArray::PushBack(double dValue) {
 
 // delete an element at some index
 void DArray::DeleteAt(int nIndex) {
+	assert(this->m_nSize <= this->m_nMax);
 	if (m_nSize == 0 || nIndex < 0 || nIndex >= m_nSize) {
 		throw std::out_of_range("nIndex invalid or DArray already empty");
 	}
-
-
-
 	if (m_nSize == 1) {
 		m_nSize = 0;
 		m_nMax = 0;
 		m_pData = nullptr;
 		return;
 	}
-
-	double* new_p = new double[m_nSize - 1];
+	double* new_p = new double[(size_t)m_nSize - 1];
 	for (int i = 0; i < nIndex; i++) {
 		new_p[i] = m_pData[i];
 	}
@@ -202,6 +208,7 @@ void DArray::DeleteAt(int nIndex) {
 // **insert before nIndex**
 // for nIndex == m_nSize it means pushback
 void DArray::InsertAt(int nIndex, double dValue) {
+	assert(this->m_nSize <= this->m_nMax);
 	if (nIndex < 0 || nIndex > m_nSize) {
 		throw std::out_of_range("nIndex invalid");
 	}
@@ -212,7 +219,7 @@ void DArray::InsertAt(int nIndex, double dValue) {
 
 	double* new_p = m_pData;
 	if (m_nSize == m_nMax) { // already full, expand
-		new_p = new double[m_nSize * 2 + 1];
+		new_p = new double[(size_t)m_nSize * 2 + 1];
 		m_nMax = m_nSize * 2 + 1;
 			
 		for (int i = 0; i < nIndex; i++) {
@@ -230,6 +237,7 @@ void DArray::InsertAt(int nIndex, double dValue) {
 
 // overload operator '='
 DArray& DArray::operator = (const DArray& arr) {
+	assert(this->m_nSize <= this->m_nMax);
 	Free();
 	if (arr.m_nSize == 0) {
 		this->m_nSize = 0;

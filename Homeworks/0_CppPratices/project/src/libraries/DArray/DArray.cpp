@@ -144,6 +144,7 @@ void DArray::PushBack(double dValue) {
 void DArray::DeleteAt(int nIndex) {
 	if (m_nSize == 0 || nIndex < 0 || nIndex >= m_nSize) {
 		throw std::out_of_range("nIndex invalid or DArray already empty");
+		return;
 	}
 
 	if (m_nSize == 1) {
@@ -152,7 +153,7 @@ void DArray::DeleteAt(int nIndex) {
 		return;
 	}
 
-	double* new_p = new double[m_nSize - 1];
+	double* new_p = new double[(size_t)m_nSize - 1];
 	for (int i = 0; i < nIndex; i++) {
 		new_p[i] = m_pData[i];
 	}
@@ -175,7 +176,7 @@ void DArray::InsertAt(int nIndex, double dValue) {
 		return;
 	}
 
-	double* new_p = new double[m_nSize + 1];
+	double* new_p = new double[(size_t)m_nSize + 1];
 	for (int i = 0; i < nIndex; i++) {
 		new_p[i] = m_pData[i];
 	}

@@ -16,7 +16,7 @@ void do_poly_test(void) {
 	clock_t t0 = clock();
 	for (int i = 0; i < 500; i++) {
 		deg_vec.push_back(rand());
-		cof_vec.push_back((double)rand() / (rand() + 1) * rand());
+		cof_vec.push_back((double)rand() / ((double)rand() + 1) * rand());
 	}
 	clock_t vcg = clock();
 	std::cout << "Vec Generation Time: " << vcg - t0 << std::endl;

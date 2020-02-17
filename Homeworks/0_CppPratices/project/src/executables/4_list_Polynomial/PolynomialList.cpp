@@ -100,6 +100,8 @@ void PolynomialList::Print() const {
     std::cout << std::endl;
 }
 
+// fscanf is actually safe here
+#define _CRT_SECURE_NO_WARNINGS
 bool PolynomialList::ReadFromFile(const string& file) {
     FILE *fp = fopen(file.c_str(), "r+");
     if (fp == NULL) {
@@ -123,6 +125,7 @@ bool PolynomialList::ReadFromFile(const string& file) {
 
     return true;
 }
+#undef _CRT_SECURE_NO_WARNINGS
 
 // Polynomial list is in ascending order
 PolynomialList::Term& PolynomialList::AddOneTerm(const Term& term) {

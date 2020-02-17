@@ -258,7 +258,7 @@ void DArray<T>::DeleteAt(int nIndex) {
 		return;
 	}
 
-	T* new_p = new T[m_nSize - 1];
+	T* new_p = new T[(size_t)m_nSize - 1];
 	for (int i = 0; i < nIndex; i++) {
 		new_p[i] = m_pData[i];
 	}
