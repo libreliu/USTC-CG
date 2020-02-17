@@ -1,0 +1,1 @@
+Ubpa_SetupTarget(MODE "EXE" NAME "7_UseDll" SOURCES "main.cpp" LIBS "DArray")

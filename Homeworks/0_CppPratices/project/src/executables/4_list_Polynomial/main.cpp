@@ -19,6 +19,12 @@ int main(int argc, char** argv) {
 
 	p3 = p1 * p2;
 	p3.Print();
+	
+	// my extended tests
+	p3 = p3 + PolynomialList({ 1 }, { 0.0000001 });
+	p3.Print();
+	p3.compress();
+	p3.Print();
 
 	return 0;
 }

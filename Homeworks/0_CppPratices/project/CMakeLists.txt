@@ -13,7 +13,8 @@ endif()
 set(CMAKE_DEBUG_POSTFIX d)
 
 # 确定 C++ 版本
-set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # 将生成的 exe, dll, lib 等放置在 bin, lib 目录

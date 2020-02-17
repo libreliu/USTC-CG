@@ -1,0 +1,1 @@
+Ubpa_SetupTarget(MODE "EXE" NAME "6_UseLib" SOURCES "main.cpp" LIBS "PolynomialList")

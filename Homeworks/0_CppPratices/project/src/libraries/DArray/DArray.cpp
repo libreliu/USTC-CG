@@ -1,5 +1,5 @@
 // implementation of class DArray
-#include "DArray.h"
+#include <DArray.h>
 #include <exception>
 #include <iostream>
 #include <cstdio>
