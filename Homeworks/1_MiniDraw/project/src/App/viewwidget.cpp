@@ -10,7 +10,15 @@ ViewWidget::ViewWidget(QWidget *parent) : QWidget(parent) {
   this->setMouseTracking(true);
 }
 
-ViewWidget::~ViewWidget() {}
+ViewWidget::~ViewWidget() {
+  for (auto &s : shape_list_) {
+	delete s;
+  }
+  if (shape_ != NULL) {
+	delete shape_;
+  }
+	
+}
 
 void ViewWidget::setLine() { type_ = Shape::kLine; }
 

@@ -62,5 +62,5 @@ void MiniDraw::AboutBox()
 
 MiniDraw::~MiniDraw()
 {
-
+	delete view_widget_;
 }
