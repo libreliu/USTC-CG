@@ -23,7 +23,10 @@ void Freehand::set_end(QPoint e)
 }
 
 void Freehand::Draw(QPainter& painter) {
-	for (auto& p : this->path) {
-		painter.drawPoint(p);
-	}
+    if (path.size() >= 1) {
+        auto it = path.begin();
+        for (; it != path.end() && (it + 1) != path.end(); it++) {
+            painter.drawLine(*it, *(it+1));
+        }
+    }
 }

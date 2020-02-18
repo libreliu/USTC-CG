@@ -1,8 +1,8 @@
 #pragma once
 
-#include"shape.h"
+#include "Shape.h"
 
-class Freehand :public shape
+class Freehand :public Shape
 {
 public:
 	Freehand();

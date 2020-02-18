@@ -2,13 +2,13 @@
 #define VIEWWIDGET_H
 
 #include <QWidget>
-#include<qevent.h>
-#include<qpainter.h>
+#include <qevent.h>
+#include <qpainter.h>
 #include "ui_viewwidget.h"
-#include"shape.h"
-#include"Line.h"
-#include"Rect.h"
-#include"Freehand.h"
+#include "Shape.h"
+#include "Line.h"
+#include "Rect.h"
+#include "Freehand.h"
 #include "Ellipse.h"
 #include "Polygon.h"
 #include<vector>

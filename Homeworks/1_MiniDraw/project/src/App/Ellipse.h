@@ -1,8 +1,8 @@
 #pragma once
 
-#include "shape.h"
+#include "Shape.h"
 
-class Ellipse : public shape {
+class Ellipse : public Shape {
 public:
 	Ellipse();
 	~Ellipse();

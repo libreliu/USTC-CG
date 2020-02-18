@@ -5,8 +5,8 @@
 class Shape
 {
 public:
-	shape();
-	virtual ~shape();
+	Shape();
+	virtual ~Shape();
 	virtual void Draw(QPainter &paint)=0;
 	virtual void set_start(QPoint s);
 	virtual void set_end(QPoint e);

@@ -1,5 +1,4 @@
 #include "Polygon.h"
-#include <cstdio>
 
 Polygon::Polygon() : finished(false) {
 
@@ -16,7 +15,6 @@ void Polygon::set_start(QPoint s)
 
 void Polygon::set_end(QPoint e)
 {
-    printf("set_end called\n");
     end = e;
 }
 
