@@ -2,11 +2,11 @@
 
 #include "Shape.h"
 
-class Polygon :public Shape
+class CPolygon :public Shape
 {
 public:
-	Polygon();
-	~Polygon();
+	CPolygon();
+	~CPolygon();
 
     void set_finished(void);
 

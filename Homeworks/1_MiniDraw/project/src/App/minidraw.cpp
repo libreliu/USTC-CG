@@ -21,16 +21,16 @@ void MiniDraw::Creat_Action()
 	connect(Action_Line, SIGNAL(triggered()), view_widget_, SLOT(setLine()));
 
 	Action_Rect = new QAction(tr("&Rect"), this);
-	connect(Action_Rect, &QAction::triggered, view_widget_, &ViewWidget::setRect);
+	connect(Action_Rect, SIGNAL(triggered()), view_widget_, SLOT(setRect()));
 
 	Action_Freehand = new QAction(tr("&Freehand"), this);
-	connect(Action_Freehand, &QAction::triggered, view_widget_, &ViewWidget::setFreehand);
+	connect(Action_Freehand, SIGNAL(triggered()), view_widget_, SLOT(setFreehand()));
 
 	Action_Ellipse = new QAction(tr("&Ellipse"), this);
-	connect(Action_Ellipse, &QAction::triggered, view_widget_, &ViewWidget::setEllipse);
+	connect(Action_Ellipse, SIGNAL(triggered()), view_widget_, SLOT(setEllipse()));
 
 	Action_Polygon = new QAction(tr("&Polygon"), this);
-	connect(Action_Polygon, &QAction::triggered, view_widget_, &ViewWidget::setPolygon);
+	connect(Action_Polygon, SIGNAL(triggered()), view_widget_, SLOT(setPolygon()));
 }
 
 void MiniDraw::Creat_ToolBar()

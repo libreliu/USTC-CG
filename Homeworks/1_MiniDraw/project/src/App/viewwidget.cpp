@@ -37,7 +37,7 @@ void ViewWidget::mousePressEvent(QMouseEvent *event) {
 
   if (Qt::RightButton == event->button()) {
     if (type_ == Shape::kPolygon && draw_status_) {
-      dynamic_cast<Polygon *>(shape_)->set_finished();
+      dynamic_cast<CPolygon *>(shape_)->set_finished();
       draw_status_ = false;
       shape_list_.push_back(shape_);
       shape_ = NULL;
@@ -64,10 +64,10 @@ void ViewWidget::mousePressEvent(QMouseEvent *event) {
         shape_ = new Freehand();
         break;
       case Shape::kEllipse:
-        shape_ = new Ellipse();
+        shape_ = new CEllipse();
         break;
       case Shape::kPolygon:
-        shape_ = new Polygon();
+        shape_ = new CPolygon();
         break;
       }
       if (shape_ != NULL) {
