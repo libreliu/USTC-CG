@@ -33,3 +33,4 @@ students/
 *.exe
 *.ilk
 *.pdb
+/.vscode/settings.json

@@ -20,16 +20,21 @@ void MiniDraw::Creat_Action()
 
 	Action_Rect = new QAction(tr("&Rect"), this);
 	connect(Action_Rect, &QAction::triggered, view_widget_, &ViewWidget::setRect);
+
+	Action_Freehand = new QAction(tr("&Freehand"), this);
+	connect(Action_Freehand, &QAction::triggered, view_widget_, &ViewWidget::setFreehand);
 }
 
 void MiniDraw::Creat_ToolBar()
 {
 	pToolBar = addToolBar(tr("&Main"));	pToolBar->addAction(Action_About);	pToolBar->addAction(Action_Line);	pToolBar->addAction(Action_Rect);
+	pToolBar->addAction(Action_Freehand);
 }
 
 void MiniDraw::Creat_Menu()
 {
 	pMenu = menuBar()->addMenu(tr("&Figure Tool"));	pMenu->addAction(Action_About);	pMenu->addAction(Action_Line);	pMenu->addAction(Action_Rect);
+	pMenu->addAction(Action_Freehand);
 }
 
 void MiniDraw::AboutBox()

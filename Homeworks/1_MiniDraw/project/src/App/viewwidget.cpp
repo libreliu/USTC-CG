@@ -24,6 +24,11 @@ void ViewWidget::setRect()
 	type_ = shape::kRect;
 }
 
+void ViewWidget::setFreehand()
+{
+	type_ = shape::kFreehand;
+}
+
 void ViewWidget::mousePressEvent(QMouseEvent* event)
 {
 	if (Qt::LeftButton == event->button())
@@ -38,6 +43,9 @@ void ViewWidget::mousePressEvent(QMouseEvent* event)
 
 		case shape::kRect:
 			shape_ = new Rect();
+			break;
+		case shape::kFreehand:
+			shape_ = new Freehand();
 			break;
 		}
 		if (shape_ != NULL)
