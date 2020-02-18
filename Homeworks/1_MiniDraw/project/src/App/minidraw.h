@@ -4,7 +4,8 @@
 #include <QtWidgets/QMainWindow>
 #include <qmessagebox.h>
 #include <ui_minidraw.h>
-#include <viewwidget.h>
+#include <viewwidget.h>
+
 
 class MiniDraw : public QMainWindow
 {
@@ -20,6 +21,8 @@ public:
 	QAction		*Action_Line;
 	QAction		*Action_Rect;
 	QAction     *Action_Freehand;
+	QAction     *Action_Ellipse;
+	QAction     *Action_Polygon;
 
 	void Creat_Menu();
 	void Creat_ToolBar();
