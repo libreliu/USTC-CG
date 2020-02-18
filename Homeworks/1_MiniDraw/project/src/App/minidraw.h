@@ -4,7 +4,8 @@
 #include <QtWidgets/QMainWindow>
 #include <qmessagebox.h>
 #include <ui_minidraw.h>
-#include <viewwidget.h>
+#include <viewwidget.h>
+
 
 class MiniDraw : public QMainWindow
 {
