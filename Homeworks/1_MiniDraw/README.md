@@ -1,12 +1,15 @@
 # 1. 画图小工具 MiniDraw
 
-递交时间：2020 年 2 月 23 日星期日
+## 作业递交
+
+- 递交内容：程序代码及测试报告 
+- 递交时间：2020 年 2 月 23 日星期日
 
 ## 要求
 
 - 写一个画图小程序 MiniDraw，要求画直线 (Line)，椭圆 (Ellipse)，矩形 (Rectangle)，多边形 (Polygon) 等图形元素（图元）
-- 每种图元需用一个类（对象）来封装，如 `CLine`，`CEllipse`，`CPolygon`，`CFreehand` 
-- 各种图元从一个父类 `CFigure` 来继承
+- 每种图元需用一个类（对象）来封装，如 `CLine`，`CEllipse`，`CRect`，`CPolygon`，`CFreehand` 
+- 各种图元从一个父类来继承，如 `CFigure` 
 - 学习类的继承和多态
 
 ## 目的

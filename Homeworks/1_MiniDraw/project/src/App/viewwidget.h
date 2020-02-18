@@ -28,9 +28,9 @@ private:
 	bool				draw_status_;
 	QPoint				start_point_;
 	QPoint				end_point_;
-	shape::Type			type_;
-	shape				*shape_;
-	std::vector<shape*> shape_list_;
+	Shape::Type			type_;
+	Shape				*shape_;
+	std::vector<Shape*> shape_list_;
 
 
 public:

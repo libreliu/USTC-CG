@@ -2,7 +2,7 @@
 
 #include <QtGui>
 
-class shape
+class Shape
 {
 public:
 	shape();
