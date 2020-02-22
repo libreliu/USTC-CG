@@ -41,7 +41,7 @@ public:
 public:
 	void paintEvent(QPaintEvent *);
 signals:
-	public slots :
+	public slots:
 	void setLine();
 	void setRect();
 	void setFreehand();

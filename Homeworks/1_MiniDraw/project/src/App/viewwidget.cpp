@@ -6,7 +6,6 @@ ViewWidget::ViewWidget(QWidget *parent) : QWidget(parent) {
   shape_ = NULL;
   type_ = Shape::kDefault;
 
-  // 需要设置这个，否则只有鼠标按下才会有 mouseMoveEvent
   this->setMouseTracking(true);
 }
 
@@ -28,10 +27,7 @@ void ViewWidget::setFreehand() { type_ = Shape::kFreehand; }
 
 void ViewWidget::setEllipse() { type_ = Shape::kEllipse; }
 
-// 对于多边形，交互逻辑是：
-// （按下，抬起）=>鼠标拖动=>（按下抬起）=>（鼠标拖动）=>（右键）
-// 这里检测按下即可
-void ViewWidget::setPolygon() { type_ = Shape::kPolygon; }
+void ViewWidget::setPolygon(void) { type_ = Shape::kPolygon; }
 
 void ViewWidget::mousePressEvent(QMouseEvent *event) {
 

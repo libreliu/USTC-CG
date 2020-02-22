@@ -30,7 +30,7 @@ void MiniDraw::Creat_Action()
 	connect(Action_Ellipse, SIGNAL(triggered()), view_widget_, SLOT(setEllipse()));
 
 	Action_Polygon = new QAction(tr("&Polygon"), this);
-	connect(Action_Polygon, SIGNAL(triggered()), view_widget_, SLOT(setPolygon()));
+	connect(Action_Polygon, &QAction::triggered, view_widget_, &ViewWidget::setPolygon);
 }
 
 void MiniDraw::Creat_ToolBar()
