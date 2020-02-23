@@ -2,17 +2,18 @@
 
 #include "Shape.h"
 
-class Freehand :public Shape
-{
-public:
-	Freehand();
-	~Freehand();
+namespace DrawContext {
 
-	virtual void set_start(QPoint s) override;
-	virtual void set_end(QPoint e) override;
+	class Freehand :public Shape
+	{
+	public:
+		Freehand();
+		~Freehand();
 
-	void Draw(QPainter& painter) override;
-private:
-	std::vector<QPoint> path;
-};
+
+		void Draw(QPainter& painter) override;
+	private:
+		std::vector<QPoint> path;
+	};
+}
 

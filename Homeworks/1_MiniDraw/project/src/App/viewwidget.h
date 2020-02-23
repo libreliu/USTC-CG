@@ -21,17 +21,18 @@ public:
 	ViewWidget(QWidget *parent = 0);
 	~ViewWidget();
 
+	typedef enum mode {
+		VIEW,
+		DRAG_WHOLE,  // Whole Drag Mode
+		DRAG_POINT,  // Point Drag Mode
+		ADD_POINT£¬  // Point Add mode
+	} mode;
+
 private:
 	Ui::ViewWidget ui;
 
-private:
-	bool				draw_status_;
-	QPoint				start_point_;
-	QPoint				end_point_;
-	Shape::Type			type_;
-	Shape				*shape_;
-	std::vector<Shape*> shape_list_;
-
+	// set 
+	int cur_type;
 
 public:
 	void mousePressEvent(QMouseEvent *event);
@@ -40,14 +41,10 @@ public:
 
 public:
 	void paintEvent(QPaintEvent *);
-signals:
-	public slots:
-	void setLine();
-	void setRect();
-	void setFreehand();
-	void setEllipse();
-	void setPolygon();
 
+public slots:
+	void setType(int type);
+	void setMode(mode m);
 };
 
 #endif // VIEWWIDGET_H

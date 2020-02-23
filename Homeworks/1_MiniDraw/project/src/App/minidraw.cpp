@@ -4,55 +4,36 @@ MiniDraw::MiniDraw(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	view_widget_ = new ViewWidget();
-	Creat_Action();
-	Creat_ToolBar();
-	Creat_Menu();
+	/* if we assign a widget as this widget's parent, deconstr will be 
+	 * called once parent deconstructs.
+	 */
+	//view_widget_ = new ViewWidget(this);
+	//Init();
 
-	setCentralWidget(view_widget_);
+	//setCentralWidget(view_widget_);
 }
 
-void MiniDraw::Creat_Action()
+//QAction* actionView;
+//QAction* actionDrag_Shape;
+//QAction* actionDrag_Point;
+//QAction* actionAdd_Shape;
+//QAction* actionLine;
+//QAction* actionRect;
+//QAction* actionPoly;
+//QAction* actionCircle;
+//QAction* actionFreehand;
+//QAction* actionHelp;
+//QAction* actionAbout;
+//QAction* actionRaw_Mode;
+
+void MiniDraw::Init()
 {
-	Action_About = new QAction(tr("&About"), this);
-	connect(Action_About, &QAction::triggered, this, &MiniDraw::AboutBox);
+	connect(ui.actionAbout, &QAction::triggered, this, &MiniDraw::AboutBox);
+	connect(ui.actionView, &QAction::triggered, this, [=]() {
+		this->view_widget_->setMode(ViewWidget::mode::VIEW); });
 
-	Action_Line = new QAction(tr("&Line"), this);
-	connect(Action_Line, SIGNAL(triggered()), view_widget_, SLOT(setLine()));
-
-	Action_Rect = new QAction(tr("&Rect"), this);
-	connect(Action_Rect, SIGNAL(triggered()), view_widget_, SLOT(setRect()));
-
-	Action_Freehand = new QAction(tr("&Freehand"), this);
-	connect(Action_Freehand, SIGNAL(triggered()), view_widget_, SLOT(setFreehand()));
-
-	Action_Ellipse = new QAction(tr("&Ellipse"), this);
-	connect(Action_Ellipse, SIGNAL(triggered()), view_widget_, SLOT(setEllipse()));
-
-	Action_Polygon = new QAction(tr("&Polygon"), this);
-	connect(Action_Polygon, &QAction::triggered, view_widget_, &ViewWidget::setPolygon);
-}
-
-void MiniDraw::Creat_ToolBar()
-{
-	pToolBar = addToolBar(tr("&Main"));
-	pToolBar->addAction(Action_About);
-	pToolBar->addAction(Action_Line);
-	pToolBar->addAction(Action_Rect);
-	pToolBar->addAction(Action_Freehand);
-	pToolBar->addAction(Action_Ellipse);
-	pToolBar->addAction(Action_Polygon);
-}
-
-void MiniDraw::Creat_Menu()
-{
-	pMenu = menuBar()->addMenu(tr("&Figure Tool"));
-	pMenu->addAction(Action_About);
-	pMenu->addAction(Action_Line);
-	pMenu->addAction(Action_Rect);
-	pMenu->addAction(Action_Freehand);
-	pMenu->addAction(Action_Ellipse);
-	pMenu->addAction(Action_Polygon);
+	//pToolBar = addToolBar(tr("&Main"));
+	//pMenu = menuBar()->addMenu(tr("&Figure Tool"));
 }
 
 void MiniDraw::AboutBox()
@@ -62,5 +43,5 @@ void MiniDraw::AboutBox()
 
 MiniDraw::~MiniDraw()
 {
-	delete view_widget_;
+	//delete view_widget_;
 }

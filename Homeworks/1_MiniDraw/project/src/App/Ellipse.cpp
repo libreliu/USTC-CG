@@ -1,16 +1,18 @@
 #include "Ellipse.h"
 #include <QRect>
 
-CEllipse::CEllipse()
+using namespace DrawContext;
+
+Ellipse::Ellipse()
 {
 }
 
 
-CEllipse::~CEllipse()
+Ellipse::~Ellipse()
 {
 }
 
-void CEllipse::Draw(QPainter& painter)
+void Ellipse::Draw(QPainter& painter)
 {
-	painter.drawEllipse(QRect(start, end));
+	//painter.drawEllipse(QRect(start, end));
 }

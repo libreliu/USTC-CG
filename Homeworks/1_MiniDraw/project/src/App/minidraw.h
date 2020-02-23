@@ -15,21 +15,9 @@ public:
 	MiniDraw(QWidget *parent = 0);
 	~MiniDraw();
 
-	QMenu		*pMenu;
-	QToolBar	*pToolBar;
-	QAction		*Action_About;
-	QAction		*Action_Line;
-	QAction		*Action_Rect;
-	QAction     *Action_Freehand;
-	QAction     *Action_Ellipse;
-	QAction     *Action_Polygon;
-
-	void Creat_Menu();
-	void Creat_ToolBar();
-	void Creat_Action();
+	void Init();
 
 	void AboutBox();
-	
 
 private:
 	Ui::MiniDrawClass ui;

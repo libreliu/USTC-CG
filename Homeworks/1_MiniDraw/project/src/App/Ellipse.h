@@ -2,11 +2,13 @@
 
 #include "Shape.h"
 
-class CEllipse : public Shape {
-public:
-	CEllipse();
-	~CEllipse();
+namespace DrawContext {
+	class Ellipse : public Shape {
+	public:
+		Ellipse();
+		~Ellipse();
 
-	void Draw(QPainter& painter);
+		void Draw(QPainter& painter);
+	};
+
 };
-

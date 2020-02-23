@@ -2,20 +2,21 @@
 
 #include "Shape.h"
 
-class CPolygon :public Shape
-{
-public:
-	CPolygon();
-	~CPolygon();
+namespace DrawContext {
 
-    void set_finished(void);
+	class Polygon :public Shape
+	{
+	public:
+		Polygon();
+		~Polygon();
 
-	virtual void set_start(QPoint s) override;
-	virtual void set_end(QPoint e) override;
+		void set_finished(void);
 
-	void Draw(QPainter& painter);
-private:
-    // not including end
-	std::vector<QPoint> path;
-    bool finished;
-};
+		void Draw(QPainter& painter);
+	private:
+		// not including end
+		std::vector<QPoint> path;
+		bool finished;
+	};
+
+}

@@ -1,29 +1,125 @@
-<UI version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MiniDrawClass</class>
- <widget class="QMainWindow" name="MiniDrawClass" >
-  <property name="objectName" >
-   <string notr="true">MiniDrawClass</string>
-  </property>
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MiniDrawClass">
+  <property name="geometry">
    <rect>
-	<x>0</x>
-	<y>0</y>
-	<width>600</width>
-	<height>400</height>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MiniDraw</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>Mode</string>
+    </property>
+    <addaction name="actionView"/>
+    <addaction name="actionDrag_Shape"/>
+    <addaction name="actionDrag_Point"/>
+    <addaction name="actionAdd_Shape"/>
+    <addaction name="separator"/>
+    <addaction name="actionRaw_Mode"/>
+   </widget>
+   <widget class="QMenu" name="menuShape">
+    <property name="title">
+     <string>Shape</string>
+    </property>
+    <addaction name="actionLine"/>
+    <addaction name="actionRect"/>
+    <addaction name="actionPoly"/>
+    <addaction name="actionCircle"/>
+    <addaction name="actionFreehand"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuMode"/>
+   <addaction name="menuShape"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionView">
+   <property name="text">
+    <string>View</string>
+   </property>
+  </action>
+  <action name="actionDrag_Shape">
+   <property name="text">
+    <string>Drag Shape</string>
+   </property>
+  </action>
+  <action name="actionDrag_Point">
+   <property name="text">
+    <string>Drag Point</string>
+   </property>
+  </action>
+  <action name="actionAdd_Shape">
+   <property name="text">
+    <string>Add Shape</string>
+   </property>
+  </action>
+  <action name="actionLine">
+   <property name="text">
+    <string>Line</string>
+   </property>
+  </action>
+  <action name="actionRect">
+   <property name="text">
+    <string>Rect</string>
+   </property>
+  </action>
+  <action name="actionPoly">
+   <property name="text">
+    <string>Poly</string>
+   </property>
+  </action>
+  <action name="actionCircle">
+   <property name="text">
+    <string>Circle</string>
+   </property>
+  </action>
+  <action name="actionFreehand">
+   <property name="text">
+    <string>Freehand</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionRaw_Mode">
+   <property name="text">
+    <string>Raw Mode</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources>
-   <include location="minidraw.qrc"/>
+  <include location="minidraw.qrc"/>
  </resources>
  <connections/>
-</UI>
+</ui>

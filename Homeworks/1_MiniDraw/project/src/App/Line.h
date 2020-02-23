@@ -2,12 +2,15 @@
 
 #include "Shape.h"
 
-class Line :public Shape
-{
-public:
-	Line();
-	~Line();
+namespace DrawContext {
 
-	void Draw(QPainter& painter);
-};
+	class Line :public Shape
+	{
+	public:
+		Line();
+		~Line();
+
+		void Draw(QPainter& painter);
+	};
+}
 
