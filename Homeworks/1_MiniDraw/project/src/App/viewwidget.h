@@ -49,6 +49,8 @@ private:
   mode next_mode; // goal: entering every mode makes shape_working_points=0 (and
                   // no shape drawing)
 
+  int drag_point_index;
+
   // parent-in-law
   MiniDraw *parent_in_law;
 

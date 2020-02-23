@@ -43,7 +43,7 @@ namespace DrawContext {
 		const std::vector<QPoint>& getCtrlPoints(void);
 
 		/* index is given in getCtrlPoint */
-		void modifyCtrlPoint(int index, QPoint& dest);
+		void modifyCtrlPoint(int index, const QPoint& dest);
 
 	protected:
 		std::vector<QPoint> ctrl_points;

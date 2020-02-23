@@ -79,8 +79,8 @@ int Shape::getAttr(const std::string &s)
 
 int Shape::getCtrlPoint(const QPoint& cursor, int range)
 {
-	const int range_x = 10;
-	const int range_y = 10;
+	const int range_x = range;
+	const int range_y = range;
 	const int xmin = my_max(cursor.x() - range_x, 0);
 	// todo sanity check
 	const int xmax = cursor.x() + range_x;
@@ -104,7 +104,7 @@ const std::vector<QPoint>& Shape::getCtrlPoints(void)
 	return ctrl_points;
 }
 
-void Shape::modifyCtrlPoint(int index, QPoint& dest)
+void Shape::modifyCtrlPoint(int index, const QPoint& dest)
 {
 	if (index >= ctrl_points.size()) {
 		throw std::out_of_range("modifyed an out-of-range index");

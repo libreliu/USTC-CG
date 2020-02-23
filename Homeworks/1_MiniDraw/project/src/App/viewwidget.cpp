@@ -134,6 +134,21 @@ void ViewWidget::mousePressEvent(QMouseEvent *event) {
       }
     }
     break;
+  case DRAG_POINT:
+    if (event->button() == Qt::LeftButton) {
+      assert(!shape_working); // or we'll have memleak
+      for (int i = shape_list.size() - 1; i >= 0; i--) {
+        if ((drag_point_index = shape_list[i]->getCtrlPoint(event->pos(), 10)) >= 0) {
+          // found one
+          shape_working = shape_list[i];
+          shape_list.erase(shape_list.begin() + i);
+          return;
+        }
+      }
+
+    }
+
+    break;
   }
 
   update();
@@ -152,6 +167,13 @@ void ViewWidget::mouseMoveEvent(QMouseEvent *event) {
         shape_working->addCtrlPoint(event->pos());
       }
     }
+    break;
+  case DRAG_POINT:
+    if (shape_working) {
+      shape_working->modifyCtrlPoint(drag_point_index, event->pos());
+    }
+
+    break;
   }
 
   parent_in_law->setCursorStatus(event->pos().x(), event->pos().y());
@@ -169,6 +191,14 @@ void ViewWidget::mouseReleaseEvent(QMouseEvent *event) {
       doModeSwitch();
     }
     break;
+  case DRAG_POINT:
+    if (shape_working) {
+      if (shape_working->getCtrlPoints()[drag_point_index] != event->pos()) {
+        shape_working->modifyCtrlPoint(drag_point_index, event->pos());
+      }
+      pushShape();
+      doModeSwitch();
+    }
   }
 }
 
