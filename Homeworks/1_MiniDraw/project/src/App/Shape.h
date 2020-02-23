@@ -37,6 +37,8 @@ namespace DrawContext {
 
 		void modifyLastCtrlPoint(const QPoint& p);
 
+		const QPoint& getLastCtrlPoint();
+
 		/* return ctrl_points */
 		const std::vector<QPoint>& getCtrlPoints(void);
 

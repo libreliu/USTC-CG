@@ -24,6 +24,11 @@ MiniDraw::MiniDraw(QWidget *parent) : QMainWindow(parent) {
 // QAction* actionAbout;
 // QAction* actionRaw_Mode;
 
+void MiniDraw::putMessage(const QString msg)
+{
+    statusBar()->showMessage(msg);
+}
+
 // ViewWidget is held responsible for the logic here
 void MiniDraw::setShapeStatus(DrawContext::ShapeManager::ShapeType shape) {
 	shapeVal = shape;
@@ -80,19 +85,15 @@ void MiniDraw::Init() {
   // set default status
   this->view_widget_->setMode(ViewWidget::mode::VIEW);
   this->view_widget_->setShape(DrawContext::ShapeManager::ShapeType::Line);
-
-
+  
   statusBar()->showMessage(tr("Ready"));
-
-  // pToolBar = addToolBar(tr("&Main"));
-  // pMenu = menuBar()->addMenu(tr("&Figure Tool"));
 }
 
 void MiniDraw::updateSBarIndicator(void) {
   QString modeStr;
   QString shapeStr;
   QString cursorStr;
-  cursorStr.sprintf("(%d, %d)", cursor_x, cursor_y);
+  cursorStr = QString("(%1, %2)").arg(cursor_x).arg(cursor_y);
 
   switch (modeVal) {
   case ViewWidget::mode::VIEW:

@@ -3,7 +3,7 @@
 using namespace DrawContext;
 
 Freehand::Freehand() {
-
+    this->setAttr("raw-mode", 1);
 }
 
 Freehand::~Freehand() {
@@ -11,9 +11,9 @@ Freehand::~Freehand() {
 }
 
 void Freehand::Draw(QPainter& painter) {
-    if (path.size() >= 1) {
-        auto it = path.begin();
-        for (; it != path.end() && (it + 1) != path.end(); it++) {
+    if (ctrl_points.size() >= 1) {
+        auto it = ctrl_points.begin();
+        for (; it != ctrl_points.end() && (it + 1) != ctrl_points.end(); it++) {
             painter.drawLine(*it, *(it+1));
         }
     }

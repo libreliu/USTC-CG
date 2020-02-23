@@ -2,7 +2,7 @@
 
 using namespace DrawContext;
 
-Polygon::Polygon() : finished(false) {
+Polygon::Polygon() {
 
 }
 
@@ -10,22 +10,14 @@ Polygon::~Polygon() {
 
 }
 
-void Polygon::set_finished(void) {
-    this->finished = true;
-}
-
 void Polygon::Draw(QPainter& painter) {
-    // path -> end || end
-    if (path.size() >= 1) {
-        auto it = path.begin();
-        for (; it != path.end() && (it + 1) != path.end(); it++) {
+    if (ctrl_points.size() >= 1) {
+        auto it = ctrl_points.begin();
+        for (; it != ctrl_points.end() && (it + 1) != ctrl_points.end(); it++) {
             painter.drawLine(*it, *(it+1));
         }
 
-        if (finished) {
-            painter.drawLine(path.back(), path.front());
-        } else {
-           // painter.drawLine(path.back(), end);
-        }
+        painter.drawLine(ctrl_points.back(), ctrl_points.front());
+
     }
 }

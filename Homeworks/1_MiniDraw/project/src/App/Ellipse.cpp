@@ -6,7 +6,6 @@ using namespace DrawContext;
 Ellipse::Ellipse()
 {
 	this->setAttr("point-required", 2);
-	printf("Ellipse constructed\n");
 }
 
 

@@ -14,6 +14,13 @@ void Shape::addCtrlPoint(const QPoint& p) {
 	ctrl_points.push_back(p);
 }
 
+const QPoint& Shape::getLastCtrlPoint() {
+	if (ctrl_points.size() == 0) {
+		throw std::out_of_range("nothing to get");
+	}
+	return ctrl_points[ctrl_points.size() - 1];
+}
+
 void Shape::modifyLastCtrlPoint(const QPoint& p) {
 	if (ctrl_points.size() == 0) {
 		throw std::out_of_range("nothing to modify");

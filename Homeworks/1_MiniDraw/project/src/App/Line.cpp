@@ -4,6 +4,7 @@ using namespace DrawContext;
 
 Line::Line()
 {
+	this->setAttr("point-required", 2);
 }
 
 Line::~Line()
@@ -12,5 +13,7 @@ Line::~Line()
 
 void Line::Draw(QPainter& painter)
 {
-	//painter.drawLine(start, end);
+	if (ctrl_points.size() == 2) {
+		painter.drawLine(ctrl_points[0], ctrl_points[1]);
+	}
 }

@@ -20,7 +20,7 @@ public:
 	void AboutBox();
 
 	// maintain statusbar messages
-	void putMessage(const std::string& msg);
+	void putMessage(const QString msg);
 	void setShapeStatus(DrawContext::ShapeManager::ShapeType shape);
 	void setModeStatus(ViewWidget::mode mode);
 	void setCursorStatus(int x, int y);
