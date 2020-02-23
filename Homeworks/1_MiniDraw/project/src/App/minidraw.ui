@@ -41,7 +41,7 @@
     <addaction name="actionLine"/>
     <addaction name="actionRect"/>
     <addaction name="actionPoly"/>
-    <addaction name="actionCircle"/>
+    <addaction name="actionEllipse"/>
     <addaction name="actionFreehand"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -91,9 +91,12 @@
     <string>Poly</string>
    </property>
   </action>
-  <action name="actionCircle">
+  <action name="actionEllipse">
    <property name="text">
-    <string>Circle</string>
+    <string>Ellipse</string>
+   </property>
+   <property name="toolTip">
+    <string>Ellipse</string>
    </property>
   </action>
   <action name="actionFreehand">

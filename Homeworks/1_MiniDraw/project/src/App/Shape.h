@@ -17,20 +17,25 @@ namespace DrawContext {
 		Shape();
 		virtual ~Shape();
 		virtual void Draw(QPainter& paint) = 0;
+		
 
 		/* Draw control points, with lines and "+" mark */
 		void DrawCtrlPoints(QPainter& paint);
 
 		/* Attr to maintain and decouple messages */
-		void setAttr(std::string& s, int a);
+		void setAttr(const std::string& s, int a);
 
 		/* returns -1 if not found */
-		int getAttr(std::string& s);
+		int getAttr(const std::string& s);
 
 		/* Checking if it's the correct control point (within a preset range in px)
 		 * return -1 if not, and index (>=0) if found
 		 */
-		int getCtrlPoint(QPoint& cursor, int range);
+		int getCtrlPoint(const QPoint& cursor, int range);
+
+		void addCtrlPoint(const QPoint& p);
+
+		void modifyLastCtrlPoint(const QPoint& p);
 
 		/* return ctrl_points */
 		const std::vector<QPoint>& getCtrlPoints(void);
@@ -41,6 +46,8 @@ namespace DrawContext {
 	protected:
 		std::vector<QPoint> ctrl_points;
 		std::map<std::string, int> attr;
+
+		void drawCross(QPainter& paint, int x, int y);
 
 	};
 
