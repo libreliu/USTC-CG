@@ -7,11 +7,11 @@ _deps/
 
 *Config.h
 
-*.bmp
-*.png
-*.jpg
-*.gif
-*.mp4
+#*.bmp
+#*.png
+#*.jpg
+#*.gif
+#*.mp4
 *.pdf
 
 *.html
