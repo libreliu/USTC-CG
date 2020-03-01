@@ -77,6 +77,14 @@ void MainWindow::CreateActions()
 	action_restore_ = new QAction(tr("Restore"), this);
 	action_restore_->setStatusTip(tr("Show origin image"));
 	connect(action_restore_, &QAction::triggered, imagewidget_, &ImageWidget::Restore);
+
+	action_idw_ = new QAction(tr("IDW Warping"), this);
+	action_idw_->setStatusTip(tr("Warp by IDW"));
+	connect(action_idw_, &QAction::triggered, imagewidget_, &ImageWidget::IDWWarp);
+
+	action_rbf_ = new QAction(tr("RBF Warping"), this);
+	action_rbf_->setStatusTip(tr("Warp by RBF"));
+	connect(action_rbf_, &QAction::triggered, imagewidget_, &ImageWidget::RBFWarp);
 }
 
 void MainWindow::CreateMenus()
@@ -94,6 +102,9 @@ void MainWindow::CreateMenus()
 	menu_edit_->addAction(action_mirror_);
 	menu_edit_->addAction(action_gray_);
 	menu_edit_->addAction(action_restore_);
+
+	menu_edit_->addAction(action_idw_);
+	menu_edit_->addAction(action_rbf_);
 }
 
 void MainWindow::CreateToolBars()
@@ -109,6 +120,9 @@ void MainWindow::CreateToolBars()
 	toolbar_file_->addAction(action_mirror_);
 	toolbar_file_->addAction(action_gray_);
 	toolbar_file_->addAction(action_restore_);
+
+	toolbar_file_->addAction(action_idw_);
+	toolbar_file_->addAction(action_rbf_);
 }
 
 void MainWindow::CreateStatusBar()

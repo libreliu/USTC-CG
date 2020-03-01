@@ -50,6 +50,8 @@ private:
 	QAction		*action_mirror_;
 	QAction		*action_gray_;
 	QAction		*action_restore_;
+	QAction		*action_idw_;
+	QAction		*action_rbf_;
 
 	ImageWidget		*imagewidget_;
 };
