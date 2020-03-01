@@ -58,7 +58,7 @@ void IDWWarper::initialize(std::vector<IntMapPoint> m) {
 
     // reserve enough memory
     t_mat.clear();
-    t_mat.reserve(total_pairs);
+    t_mat = std::vector<TMatrix>(total_pairs);
 
     // aux info
     ctrl_point_pair = m;

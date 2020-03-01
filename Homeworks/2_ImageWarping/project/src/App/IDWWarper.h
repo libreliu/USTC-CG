@@ -49,7 +49,7 @@ public:
 protected:
     std::vector<TMatrix> t_mat;
     std::vector<IntMapPoint> ctrl_point_pair;
-    int total_pairs;
+    size_t total_pairs;
 
     static IDWWarper inst;
 };

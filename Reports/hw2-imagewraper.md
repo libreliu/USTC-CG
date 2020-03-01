@@ -151,7 +151,32 @@ $$
 
 ## 实现
 
+### 多态部分
 
+采用 `IDWWarper` 和 `RBFWarper` 两个类，每个类中有方法 `initialize` 和 `doWarp`。出于性能的考虑没有使用基类+虚函数的方法实现接口，而是直接用模板套在 Wrap 上面，用一个 `template <typename Warper> void doWarp(void)` 函数来进行两种代码的复用。
+
+### Known Bugs
+
+1. 没有实现 $ \lt 4 $ 个点的 Warping （对于 RBF 会抛异常）
+2. 在 MSVC 下有小概率出现 `Run-Time Check Failure #2 - Stack around the variable 'w' was corrupted`
+   - 尝试注释掉了全部我写的代码，没啥效果
+   - 直到我把 mainwindow 中的修改也注释掉...
+   - 限于精力没法继续搞了，在 Linux 下是正常的
+     - 当然，也可能不正常但我没发现，毕竟我没跑 Address Sanitizer...
 
 ## 运行截图
+
+### RBF + 8 Debug Dots
+
+![1583098161615](assets/1583098161615.png)
+
+### IDW + 8 Debug Dots
+
+![1583098210666](assets/1583098210666.png)
+
+### Play with IDW 
+
+![1583098272933](assets/1583098272933.png)
+
+（往中心拖动的结果）
 

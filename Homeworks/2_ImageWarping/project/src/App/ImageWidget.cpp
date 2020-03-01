@@ -19,7 +19,22 @@ ImageWidget::ImageWidget(void) {
   mouse_status_ = false;
 }
 
-ImageWidget::~ImageWidget(void) {}
+ImageWidget::~ImageWidget(void) {
+    delete ptr_image_;
+    delete ptr_image_backup_;
+}
+
+void ImageWidget::loadDebug(void) {
+    point_.clear();
+    point_.push_back(std::make_pair(IntPoint(0, 0), IntPoint(0, 0)));
+    point_.push_back(std::make_pair(IntPoint(255, 0), IntPoint(255, 0)));
+    point_.push_back(std::make_pair(IntPoint(0, 255), IntPoint(0, 255)));
+    point_.push_back(std::make_pair(IntPoint(255, 255), IntPoint(255, 255)));
+    point_.push_back(std::make_pair(IntPoint(128, 0), IntPoint(128, 20)));
+    point_.push_back(std::make_pair(IntPoint(0, 128), IntPoint(20, 128)));
+    point_.push_back(std::make_pair(IntPoint(128, 255), IntPoint(128, 235)));
+    point_.push_back(std::make_pair(IntPoint(255, 128), IntPoint(235, 128)));
+}
 
 void ImageWidget::paintEvent(QPaintEvent *paintevent) {
   QPainter painter;
@@ -81,20 +96,21 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void ImageWidget::drawTip(QPainter *p, int aleft, int atop) {
-  char buf[100];
-  const QRect rectangle = QRect(0, 0, 300, 100);
-  QRect boundingRect;
-  sprintf(
-      buf,
-      "X: %d, Y: %d (mapped X: %d, Y: %d)\n"
-      "Map: (%d,%d)->(%d,%d)",
-      last_mouse.rx(), last_mouse.ry(), last_mouse.rx() - aleft,
-      last_mouse.ry() - atop, last_mouse.rx() - aleft, last_mouse.ry() - atop,
-      pnt_map[std::make_pair(last_mouse.rx() - aleft, last_mouse.ry() - atop)]
-          .first,
-      pnt_map[std::make_pair(last_mouse.rx() - aleft, last_mouse.ry() - atop)]
-          .second);
-  p->drawText(rectangle, 0, tr(buf), &boundingRect);
+  //char buf[100];
+  //const QRect rectangle = QRect(0, 0, 300, 100);
+  //QRect boundingRect;
+  //sprintf_s(
+  //    buf,
+  //    sizeof(buf),
+  //    "X: %d, Y: %d (mapped X: %d, Y: %d)\n"
+  //    "Map: (%d,%d)->(%d,%d)",
+  //    last_mouse.rx(), last_mouse.ry(), last_mouse.rx() - aleft,
+  //    last_mouse.ry() - atop, last_mouse.rx() - aleft, last_mouse.ry() - atop,
+  //    pnt_map[std::make_pair(last_mouse.rx() - aleft, last_mouse.ry() - atop)]
+  //        .first,
+  //    pnt_map[std::make_pair(last_mouse.rx() - aleft, last_mouse.ry() - atop)]
+  //        .second);
+  //p->drawText(rectangle, 0, tr(buf), &boundingRect);
 }
 
 void ImageWidget::clearDots() { point_.clear(); }
@@ -151,27 +167,19 @@ void ImageWidget::SaveAs() {
 }
 
 void ImageWidget::Invert() {
-  // for (int i = 0; i < ptr_image_->width(); i++) {
-  //   for (int j = 0; j < ptr_image_->height(); j++) {
-  //     QRgb color = ptr_image_->pixel(i, j);
-  //     ptr_image_->setPixel(
-  //         i, j,
-  //         qRgb(255 - qRed(color), 255 - qGreen(color), 255 - qBlue(color)));
-  //   }
-  // }
+   for (int i = 0; i < ptr_image_->width(); i++) {
+     for (int j = 0; j < ptr_image_->height(); j++) {
+       QRgb color = ptr_image_->pixel(i, j);
+       ptr_image_->setPixel(
+           i, j,
+           qRgb(255 - qRed(color), 255 - qGreen(color), 255 - qBlue(color)));
+     }
+   }
 
-  // // equivalent member function of class QImage
-  // // ptr_image_->invertPixels(QImage::InvertRgb);
-  // update();
+   // equivalent member function of class QImage
+   // ptr_image_->invertPixels(QImage::InvertRgb);
+   update();
 
-  point_.push_back(std::make_pair(IntPoint(0, 0), IntPoint(0, 0)));
-  point_.push_back(std::make_pair(IntPoint(255, 0), IntPoint(255, 0)));
-  point_.push_back(std::make_pair(IntPoint(0, 255), IntPoint(0, 255)));
-  point_.push_back(std::make_pair(IntPoint(255, 255), IntPoint(255, 255)));
-  point_.push_back(std::make_pair(IntPoint(128, 0), IntPoint(128, 20)));
-  point_.push_back(std::make_pair(IntPoint(0, 128), IntPoint(20, 128)));
-  point_.push_back(std::make_pair(IntPoint(128, 255), IntPoint(128, 235)));
-  point_.push_back(std::make_pair(IntPoint(255, 128), IntPoint(235, 128)));
 }
 
 void ImageWidget::Mirror(bool ishorizontal, bool isvertical) {
@@ -228,57 +236,9 @@ void ImageWidget::Restore() {
 }
 
 void ImageWidget::IDWWarp() {
-  QImage *ptr_image_new = new QImage(ptr_image_->width(), ptr_image_->height(), ptr_image_->format());
-  ptr_image_new->fill(QColor(0,0,0));
-
-  IDWWarper::getInstance()->initialize(point_);
-
-  int w = ptr_image_->width();
-  int h = ptr_image_->height();
-  for (int i = 0; i < ptr_image_->width(); i++) {
-    for (int j = 0; j < ptr_image_->height(); j++) {
-      QColor clr = ptr_image_->pixelColor(i, j);
-      IntPoint p, q;
-      p.setX(i).setY(j);
-      
-      q = IDWWarper::getInstance()->doTrans(p);
-      if (q.getX() >= w || q.getY() >= h || q.getX() < 0 || q.getY() < 0) {
-        continue;
-      } 
-
-      ptr_image_new->setPixelColor(q.getX(), q.getY(), clr);
-
-    }
-  }
-
-  delete ptr_image_;
-  ptr_image_ = ptr_image_new;
+    doWarp<IDWWarper>();
 }
 
 void ImageWidget::RBFWarp() {
-    QImage *ptr_image_new = new QImage(ptr_image_->width(), ptr_image_->height(), ptr_image_->format());
-  ptr_image_new->fill(QColor(0,0,0));
-
-  RBFWarper::getInstance()->initialize(point_);
-
-  int w = ptr_image_->width();
-  int h = ptr_image_->height();
-  for (int i = 0; i < ptr_image_->width(); i++) {
-    for (int j = 0; j < ptr_image_->height(); j++) {
-      QColor clr = ptr_image_->pixelColor(i, j);
-      IntPoint p, q;
-      p.setX(i).setY(j);
-      
-      q = RBFWarper::getInstance()->doTrans(p);
-      if (q.getX() >= w || q.getY() >= h || q.getX() < 0 || q.getY() < 0) {
-        continue;
-      } 
-
-      ptr_image_new->setPixelColor(q.getX(), q.getY(), clr);
-
-    }
-  }
-
-  delete ptr_image_;
-  ptr_image_ = ptr_image_new;
+    doWarp<RBFWarper>();
 }

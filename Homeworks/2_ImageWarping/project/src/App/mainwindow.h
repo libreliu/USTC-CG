@@ -52,6 +52,8 @@ private:
 	QAction		*action_restore_;
 	QAction		*action_idw_;
 	QAction		*action_rbf_;
+	QAction		*action_clear_dot_;
+	QAction		*action_debug_;
 
 	ImageWidget		*imagewidget_;
 };

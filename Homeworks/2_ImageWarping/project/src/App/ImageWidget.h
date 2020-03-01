@@ -16,12 +16,43 @@ public:
   ImageWidget(void);
   ~ImageWidget(void);
 
+  
+
   void mousePressEvent(QMouseEvent *event);
   void mouseMoveEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
 
 protected:
   void paintEvent(QPaintEvent *paintevent);
+
+  template <typename Warper>
+  void doWarp(void) {
+      QImage image_new(ptr_image_->width(), ptr_image_->height(), ptr_image_->format());
+      image_new.fill(QColor(0, 0, 0));
+
+      Warper::getInstance()->initialize(point_);
+
+      int w = ptr_image_->width();
+      int h = ptr_image_->height();
+      for (int i = 0; i < ptr_image_->width(); i++) {
+          for (int j = 0; j < ptr_image_->height(); j++) {
+              QColor clr = ptr_image_->pixelColor(i, j);
+              IntPoint p, q;
+              p.setX(i).setY(j);
+
+              q = Warper::getInstance()->doTrans(p);
+              if (q.getX() >= w || q.getY() >= h || q.getX() < 0 || q.getY() < 0) {
+                  continue;
+              }
+
+              image_new.setPixelColor(q.getX(), q.getY(), clr);
+
+          }
+      }
+
+      *(ptr_image_) = image_new;
+      update();
+  }
 
 public slots:
   // File IO
@@ -38,6 +69,7 @@ public slots:
   void IDWWarp();
   void RBFWarp();
   void clearDots();
+  void loadDebug();
 
 private:
   QImage *ptr_image_; // image

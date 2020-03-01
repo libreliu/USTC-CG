@@ -85,6 +85,14 @@ void MainWindow::CreateActions()
 	action_rbf_ = new QAction(tr("RBF Warping"), this);
 	action_rbf_->setStatusTip(tr("Warp by RBF"));
 	connect(action_rbf_, &QAction::triggered, imagewidget_, &ImageWidget::RBFWarp);
+
+	action_clear_dot_ = new QAction(tr("Clear Dots"), this);
+	action_clear_dot_->setStatusTip(tr("Clear all dots"));
+	connect(action_clear_dot_, &QAction::triggered, imagewidget_, &ImageWidget::clearDots);
+
+	action_debug_ = new QAction(tr("Load Debug Dots"), this);
+	action_debug_->setStatusTip(tr("Load Debug Dots (fit for a 256x256 image)"));
+	connect(action_debug_, &QAction::triggered, imagewidget_, &ImageWidget::loadDebug);
 }
 
 void MainWindow::CreateMenus()
@@ -103,8 +111,10 @@ void MainWindow::CreateMenus()
 	menu_edit_->addAction(action_gray_);
 	menu_edit_->addAction(action_restore_);
 
-	menu_edit_->addAction(action_idw_);
-	menu_edit_->addAction(action_rbf_);
+	//menu_edit_->addAction(action_idw_);
+	//menu_edit_->addAction(action_rbf_);
+	//menu_edit_->addAction(action_clear_dot_);
+	//menu_edit_->addAction(action_debug_);
 }
 
 void MainWindow::CreateToolBars()
@@ -123,6 +133,8 @@ void MainWindow::CreateToolBars()
 
 	toolbar_file_->addAction(action_idw_);
 	toolbar_file_->addAction(action_rbf_);
+	toolbar_file_->addAction(action_clear_dot_);
+	toolbar_file_->addAction(action_debug_);
 }
 
 void MainWindow::CreateStatusBar()

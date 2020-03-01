@@ -1,6 +1,7 @@
 #include "RBFWarper.h"
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 #define DIST_2(x1, y1, x2, y2) (((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)))
 
@@ -54,6 +55,8 @@ void RBFWarper::initialize(std::vector<IntMapPoint> m) {
     Eigen::MatrixXd affine_lse(6, 6);
     Eigen::VectorXd affine_lse_rhs(6);
     affine_lse = Eigen::MatrixXd::Zero(6, 6);
+    affine_lse_rhs = Eigen::VectorXd::Zero(6);
+
     for (int i = 0; i < total_pairs; i++) {
         double pix = m[i].first.getX();
         double piy = m[i].first.getY();
@@ -107,6 +110,7 @@ void RBFWarper::initialize(std::vector<IntMapPoint> m) {
 
     // a_vec calculations
     Eigen::MatrixXd A(2 * total_pairs, 2 * total_pairs);
+    A = Eigen::MatrixXd::Zero(2 * total_pairs, 2 * total_pairs);
     for (int i = 0; i < 2 * total_pairs; i = i + 2) {
         for (int j = 0; j < 2 * total_pairs; j = j + 2) {
             double pix = m[i / 2].first.getX();
@@ -132,9 +136,13 @@ void RBFWarper::initialize(std::vector<IntMapPoint> m) {
         b(i+1) = m[i / 2].second.getY() - offset(1);
     }
 
+    std::cout << A << std::endl;
+    std::cout << b << std::endl;
+
     // solve for a_vec
     Eigen::VectorXd solution = A.colPivHouseholderQr().solve(b);
-    a_vecs.reserve(total_pairs);
+    a_vecs = std::vector<Eigen::Vector2d>(total_pairs);
+
     for (int i = 0; i < 2 * total_pairs; i = i + 2) {
         a_vecs[i / 2](0) = solution(i);
         a_vecs[i / 2](1) = solution(i+1);

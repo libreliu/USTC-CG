@@ -24,7 +24,7 @@ public:
 protected:
     std::vector<Eigen::Vector2d> a_vecs;
     std::vector<IntMapPoint> ctrl_point_pair;
-    int total_pairs;
+    size_t total_pairs;
 
     Eigen::Matrix2d M_mat;
     Eigen::Vector2d b_vec;
