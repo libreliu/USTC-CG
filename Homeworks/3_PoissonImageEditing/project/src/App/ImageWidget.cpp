@@ -25,6 +25,8 @@ ImageWidget::ImageWidget(ChildWindow* relatewindow)
 
 ImageWidget::~ImageWidget(void)
 {
+	delete image_;
+	delete image_backup_;
 }
 
 int ImageWidget::ImageWidth()
@@ -42,9 +44,24 @@ void ImageWidget::set_draw_status_to_choose()
 	draw_status_ = kChoose;	
 }
 
+void ImageWidget::set_draw_status_to_choose_free()
+{
+	draw_status_ = kChooseFree;
+}
+
 void ImageWidget::set_draw_status_to_paste()
 {
 	draw_status_ = kPaste;
+}
+
+void ImageWidget::set_draw_status_to_paste_mix_poisson()
+{
+	draw_status_ = kPasteMixPoission;
+}
+
+void ImageWidget::set_draw_status_to_paste_poisson()
+{
+	draw_status_ = kPastePoisson;
 }
 
 QImage* ImageWidget::image()

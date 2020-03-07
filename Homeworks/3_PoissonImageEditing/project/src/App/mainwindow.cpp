@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
 	//ui.setupUi(this);
 
-	mdi_area_ = new QMdiArea;
+	mdi_area_ = new QMdiArea(this);
 	mdi_area_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdi_area_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setCentralWidget(mdi_area_);
@@ -72,6 +72,9 @@ void MainWindow::CreateActions()
 	// Poisson image editting
 	action_choose_polygon_ = new QAction(tr("RectChoose"), this);
 	connect(action_choose_polygon_, SIGNAL(triggered()), this, SLOT(ChooseRect()));
+
+	action_choose_freehand_ = new QAction(tr("FreeChoose"), this);
+	connect(action_choose_freehand_, SIGNAL(triggered()), this, SLOT(ChooseFree()));
 
 	action_paste_ = new QAction(tr("Paste"), this);
 	connect(action_paste_, SIGNAL(triggered()), this, SLOT(Paste()));
@@ -232,6 +235,16 @@ void MainWindow::ChooseRect()
 	if (!window)
 		return;
 	window->imagewidget_->set_draw_status_to_choose();
+	child_source_ = window;
+}
+
+void MainWindow::ChooseFree()
+{
+	// Set source child window
+	ChildWindow* window = GetChildWindow();
+	if (!window)
+		return;
+	window->imagewidget_->set_draw_status_to_choose_free();
 	child_source_ = window;
 }
 
