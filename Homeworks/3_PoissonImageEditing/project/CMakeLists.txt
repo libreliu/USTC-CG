@@ -69,19 +69,38 @@ else()
 	endif()
 endif()
 
-include_directories (
-	${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/include/_deps
-	${utemplate_SOURCE_DIR}/include
-	${OpenCV_DIR}/include
-	# $ENV{XXX_INCLUDE_PATH}
-	# ...
-)
-link_directories (
-	${PROJECT_SOURCE_DIR}/lib
-	${OpenCV_DIR}/x64/vc15/lib
-	# $ENV{XXX_LIB_PATH}
-	# ...
-)
+if(MSVC)
+	include_directories (
+		${PROJECT_SOURCE_DIR}/include
+		${PROJECT_SOURCE_DIR}/include/_deps
+		${utemplate_SOURCE_DIR}/include
+		${OpenCV_DIR}/include
+		# $ENV{XXX_INCLUDE_PATH}
+		# ...
+	)
+	link_directories (
+		${PROJECT_SOURCE_DIR}/lib
+		${OpenCV_DIR}/x64/vc15/lib
+		# $ENV{XXX_LIB_PATH}
+		# ...
+	)
+else()
+	find_package(OpenCV REQUIRED)
+
+	include_directories (
+		${PROJECT_SOURCE_DIR}/include
+		${PROJECT_SOURCE_DIR}/include/_deps
+		${utemplate_SOURCE_DIR}/include
+		${OpenCV_INCLUDE_DIRS}
+		# $ENV{XXX_INCLUDE_PATH}
+		# ...
+	)
+	link_directories (
+		${PROJECT_SOURCE_DIR}/lib
+		${OpenCV_LIBRARY_DIRS}
+		# $ENV{XXX_LIB_PATH}
+		# ...
+	)
+endif()
 
 Ubpa_AddSubDirsRec(src)

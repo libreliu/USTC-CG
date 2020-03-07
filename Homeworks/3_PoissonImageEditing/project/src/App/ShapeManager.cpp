@@ -10,21 +10,21 @@ using namespace DrawContext;
 
 // static member initialization
 std::map<int, ShapeManager::ShapeFactory> ShapeManager::shape_factories {
-	{ShapeManager::ShapeType::Ellipse, [](int param) {
-		return dynamic_cast<DrawContext::Shape *>(new DrawContext::Ellipse());
-	}},
-	{ShapeManager::ShapeType::Freehand, [](int param) {
-		return dynamic_cast<DrawContext::Shape *>(new DrawContext::Freehand());
-	}},
+	// {ShapeManager::ShapeType::Ellipse, [](int param) {
+	// 	return dynamic_cast<DrawContext::Shape *>(new DrawContext::Ellipse());
+	// }},
+	// {ShapeManager::ShapeType::Freehand, [](int param) {
+	// 	return dynamic_cast<DrawContext::Shape *>(new DrawContext::Freehand());
+	// }},
 	{ShapeManager::ShapeType::Rect, [](int param) {
 		return dynamic_cast<DrawContext::Shape *>(new DrawContext::Rect());
 	}},
-	{ShapeManager::ShapeType::Line, [](int param) {
-		return dynamic_cast<DrawContext::Shape *>(new DrawContext::Line());
-	}},
-	{ShapeManager::ShapeType::Polygon, [](int param) {
-		return dynamic_cast<DrawContext::Shape *>(new DrawContext::Polygon());
-	}}
+	// {ShapeManager::ShapeType::Line, [](int param) {
+	// 	return dynamic_cast<DrawContext::Shape *>(new DrawContext::Line());
+	// }},
+	// {ShapeManager::ShapeType::Polygon, [](int param) {
+	// 	return dynamic_cast<DrawContext::Shape *>(new DrawContext::Polygon());
+	// }}
 };
 
 int ShapeManager::registerShape(ShapeFactory fact, int type)

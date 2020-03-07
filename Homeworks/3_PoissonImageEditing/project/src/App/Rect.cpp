@@ -19,8 +19,15 @@ void Rect::Draw(QPainter& painter)
 	}
 }
 
-Eigen::Matrix<int, -1, -1> DrawContext::Rect::getMaskMatrix()
+const Eigen::Matrix<int, -1, -1> &DrawContext::Rect::getMaskMatrix()
 {
-	
-	return Eigen::Matrix<int, -1, -1>();
+	assert(ctrl_points.size() == 2);
+	if (mask_mat_valid) {
+		return mask_mat;
+	} else {
+		QRect rect = getBoundingRect();
+		mask_mat = Eigen::Matrix<int, -1, -1>::Ones(rect.width(), rect.height());
+		mask_mat_valid = true;
+		return mask_mat;
+	}
 }

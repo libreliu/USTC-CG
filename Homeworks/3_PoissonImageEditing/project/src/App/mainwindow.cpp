@@ -70,11 +70,11 @@ void MainWindow::CreateActions()
 	connect(action_restore_, SIGNAL(triggered()), this, SLOT(Restore()));
 
 	// Poisson image editting
-	action_choose_polygon_ = new QAction(tr("RectChoose"), this);
-	connect(action_choose_polygon_, SIGNAL(triggered()), this, SLOT(ChooseRect()));
+	action_choose_rect_ = new QAction(tr("RectChoose"), this);
+	connect(action_choose_rect_, SIGNAL(triggered()), this, SLOT(ChooseRect()));
 
-	action_choose_freehand_ = new QAction(tr("FreeChoose"), this);
-	connect(action_choose_freehand_, SIGNAL(triggered()), this, SLOT(ChooseFree()));
+	action_choose_polygon_ = new QAction(tr("PolyChoose"), this);
+	connect(action_choose_polygon_, SIGNAL(triggered()), this, SLOT(ChoosePoly()));
 
 	action_paste_ = new QAction(tr("Paste"), this);
 	connect(action_paste_, SIGNAL(triggered()), this, SLOT(Paste()));
@@ -115,6 +115,7 @@ void MainWindow::CreateToolBars()
 
 	// Poisson Image Editing
 	toolbar_file_->addSeparator();
+	toolbar_file_->addAction(action_choose_rect_);
 	toolbar_file_->addAction(action_choose_polygon_);
 	toolbar_file_->addAction(action_paste_);
 }
@@ -238,13 +239,13 @@ void MainWindow::ChooseRect()
 	child_source_ = window;
 }
 
-void MainWindow::ChooseFree()
+void MainWindow::ChoosePoly()
 {
 	// Set source child window
 	ChildWindow* window = GetChildWindow();
 	if (!window)
 		return;
-	window->imagewidget_->set_draw_status_to_choose_free();
+	window->imagewidget_->set_draw_status_to_choose_poly();
 	child_source_ = window;
 }
 

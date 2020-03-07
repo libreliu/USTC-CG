@@ -50,38 +50,6 @@ QRect DrawContext::Shape::getBoundingRect()
 //   |
 //  height(y)
 
-// WARNING!! const is placed at right side of the function, check if it's the reason!!
-Eigen::Matrix<int, -1, -1> DrawContext::Shape::getMaskMatrix()
-{
-	if (bounding_box_valid) {
-		return mask_mat;
-	}
-
-	getBoundingRect();
-	mask_mat = Eigen::Matrix<int, -1, -1>(bounding_box.width(), bounding_box.height());
-
-	int topleft_x = bounding_box.topLeft().x();
-	int topleft_y = bounding_box.topLeft().y();
-	// https://doc.qt.io/qt-5/qrect.html#bottom
-	// we've got historical reasons here so add one is necessary
-	int bottomright_x = bounding_box.bottomRight().x() + 1;
-	int bottomright_y = bounding_box.bottomRight().y() + 1;
-
-	// organizing lines
-
-
-	int intersection_count = 0;
-	for (int i = topleft_x; i <= bottomright_x; i++) {
-		intersection_count = 0;
-
-		// see intersections for line x=i with all other lines
-
-	}
-
-	// calculate the mask matrix according to scanline algorithm
-	return Eigen::MatrixXi();
-}
-
 void Shape::addCtrlPoint(const QPoint& p) {
 	ctrl_points.push_back(p);
 	bounding_box_valid = false;

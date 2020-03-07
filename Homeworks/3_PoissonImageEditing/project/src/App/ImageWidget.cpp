@@ -44,9 +44,9 @@ void ImageWidget::set_draw_status_to_choose()
 	draw_status_ = kChoose;	
 }
 
-void ImageWidget::set_draw_status_to_choose_free()
+void ImageWidget::set_draw_status_to_choose_poly()
 {
-	draw_status_ = kChooseFree;
+	draw_status_ = kChoosePoly;
 }
 
 void ImageWidget::set_draw_status_to_paste()

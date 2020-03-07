@@ -9,6 +9,6 @@ namespace DrawContext {
 		~Rect();
 
 		void Draw(QPainter& painter);
-		virtual Eigen::Matrix<int, -1, -1> getMaskMatrix() override;
+		virtual const Eigen::Matrix<int, -1, -1> &getMaskMatrix() override;
 	};
 }

@@ -10,7 +10,7 @@ QT_END_NAMESPACE
 enum DrawStatus
 {
 	kChoose, 
-	kChooseFree,
+	kChoosePoly,
 	kPaste,
 	kPasteMixPoission,
 	kPastePoisson,
@@ -29,7 +29,7 @@ public:
 	int ImageWidth();											// Width of image
 	int ImageHeight();											// Height of image
 	void set_draw_status_to_choose();
-	void set_draw_status_to_choose_free();
+	void set_draw_status_to_choose_poly();
 	void set_draw_status_to_paste();
 	void set_draw_status_to_paste_mix_poisson();
 	void set_draw_status_to_paste_poisson();

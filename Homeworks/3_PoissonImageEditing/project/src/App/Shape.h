@@ -21,7 +21,7 @@ namespace DrawContext {
 		virtual void Draw(QPainter& paint) = 0;
 
 		// Draw relative to bounding box
-		virtual void DrawRelative(QPainter& paint);
+		// virtual void DrawRelative(QPainter& paint);
 
 		// (0,0)----> width(x)
 		//   |
@@ -30,7 +30,7 @@ namespace DrawContext {
 		QRect getBoundingRect();
 
 		// Get a matrix [w * h], with 1 for points inside
-		virtual Eigen::Matrix<int, -1, -1> getMaskMatrix();
+		virtual const Eigen::Matrix<int, -1, -1> &getMaskMatrix() = 0;
 
 		/* Draw control points, with lines and "+" mark */
 		void DrawCtrlPoints(QPainter& paint);
@@ -68,6 +68,7 @@ namespace DrawContext {
 
 		// cache validity
 		bool bounding_box_valid;
+		bool mask_mat_valid;
 
 		void drawCross(QPainter& paint, int x, int y);
 
