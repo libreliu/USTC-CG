@@ -44,6 +44,7 @@ void ImageWidget::set_draw_status_to_choose() {
 
 void ImageWidget::set_draw_status_to_choose_poly() {
   draw_status_ = kChoosePoly;
+  is_choosing_ = false;
 }
 
 void ImageWidget::set_draw_status_to_paste() { draw_status_ = kPaste; }
@@ -168,13 +169,21 @@ void ImageWidget::mousePressEvent(QMouseEvent *mouseevent) {
   if (Qt::LeftButton == mouseevent->button()) {
     switch (draw_status_) {
     case kChoose:
+    case kChoosePoly:
       if (!is_choosing_) {
         is_choosing_ = true;
         if (selection_area_ != NULL) {
           delete selection_area_;
         }
-        selection_area_ = DrawContext::ShapeManager::getFactory(
-            DrawContext::ShapeManager::ShapeType::Rect)(0);
+        if (draw_status_ == kChoose) {
+            selection_area_ = DrawContext::ShapeManager::getFactory(
+                DrawContext::ShapeManager::ShapeType::Rect)(0);
+        }
+        else {
+            selection_area_ = DrawContext::ShapeManager::getFactory(
+                DrawContext::ShapeManager::ShapeType::Polygon)(0);
+        }
+        
         selection_area_->addCtrlPoint(mouseevent->pos());
       } else { // add a point, or finish if max point exceeded
         assert(selection_area_ != NULL);
@@ -237,7 +246,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *mouseevent) {
         // Paste
         for (int i = 0; i < w; i++) {
           for (int j = 0; j < h; j++) {
-            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(i - 1, j - 1))
+            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(j, i))
               image_->setPixel(xpos + i, ypos + j,
                                source_window_->imagewidget_->image()->pixel(
                                    xsourcepos + i, ysourcepos + j));
@@ -294,7 +303,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *mouseevent) {
         // Paste
         for (int i = 0; i < w; i++) {
           for (int j = 0; j < h; j++) {
-            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(i - 1, j - 1))
+            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(j, i))
               image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
           }
         }
@@ -347,7 +356,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *mouseevent) {
         // Paste
         for (int i = 0; i < w; i++) {
           for (int j = 0; j < h; j++) {
-            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(i - 1, j - 1))
+            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(j, i))
               image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
           }
         }
@@ -357,6 +366,14 @@ void ImageWidget::mousePressEvent(QMouseEvent *mouseevent) {
     } break;
 
     default:
+      break;
+    }
+  }
+  else if (Qt::RightButton == mouseevent->button()) {
+  switch (draw_status_) {
+  case kChoosePoly:
+      draw_status_ = kNone;
+      is_choosing_ = false;
       break;
     }
   }

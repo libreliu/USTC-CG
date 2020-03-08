@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace DrawContext;
 
@@ -32,21 +33,43 @@ void Polygon::Draw(QPainter& painter) {
 
 const Eigen::Matrix<int, -1, -1> &Polygon::getMaskMatrix() {
     
-	if (mask_mat_valid) {
+	if (mask_mat_valid && bounding_box_valid && false) {
 		return mask_mat;
 	} else {
 		QRect rect = getBoundingRect();
 
-        if (rect.width() > 2 && rect.height() >= 2) {
+        if (rect.width() < 2 && rect.height() < 2) {
             printf("Warning: rect too small\n");
             mask_mat_valid = false;
             throw mask_too_small();
         } else {
-            cv::Mat mask_mat_cv;
-            
+            assert(this->ctrl_points.size() >= 2);
+            cv::Mat mask_mat_cv = cv::Mat::zeros(rect.width(), rect.height(), CV_8UC1);
+            mask_mat = Eigen::Matrix<int, -1, -1>::Zero(rect.height(), rect.width());
 
+            int x_topleft = rect.topLeft().x() - 1;
+            int y_topleft = rect.topLeft().y() - 1 ;
 
-            mask_mat = Eigen::Matrix<int, -1, -1>::Ones(rect.width(), rect.height());
+            cv::Point* cv_points = new cv::Point[this->ctrl_points.size()];
+            int i_c = 0;
+            for (auto& p : ctrl_points) {
+                cv_points[i_c] = cv::Point(p.x() - x_topleft, p.y() - y_topleft);
+                i_c++;
+            }
+            const cv::Point* ppt[1] = { cv_points };
+            int npt[1] = { i_c };
+
+            cv::fillPoly(mask_mat_cv, ppt, npt, 1, cv::Scalar(255));
+
+            for (int i = 0; i < rect.height(); i++) {
+                for (int j = 0; j < rect.width(); j++) {
+                    if (mask_mat_cv.at<uchar>(i, j) > 0) {
+                        mask_mat(i, j) = 1;
+                    }
+                }
+            }
+
+            delete[] cv_points;
             mask_mat_valid = true;
         }
 		return mask_mat;

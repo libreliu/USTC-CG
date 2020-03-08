@@ -22,9 +22,9 @@ std::map<int, ShapeManager::ShapeFactory> ShapeManager::shape_factories {
 	// {ShapeManager::ShapeType::Line, [](int param) {
 	// 	return dynamic_cast<DrawContext::Shape *>(new DrawContext::Line());
 	// }},
-	// {ShapeManager::ShapeType::Polygon, [](int param) {
-	// 	return dynamic_cast<DrawContext::Shape *>(new DrawContext::Polygon());
-	// }}
+	{ShapeManager::ShapeType::Polygon, [](int param) {
+		return dynamic_cast<DrawContext::Shape *>(new DrawContext::Polygon());
+	}}
 };
 
 int ShapeManager::registerShape(ShapeFactory fact, int type)

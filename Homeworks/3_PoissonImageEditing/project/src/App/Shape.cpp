@@ -14,7 +14,7 @@ Shape::~Shape()
 
 QRect DrawContext::Shape::getBoundingRect()
 {
-	if (bounding_box_valid) {
+	if (bounding_box_valid && false) {
 		return bounding_box;
 	}
 	else {
