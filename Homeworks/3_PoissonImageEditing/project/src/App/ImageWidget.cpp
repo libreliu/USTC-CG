@@ -4,9 +4,14 @@
 #include <QtWidgets> 
 #include <iostream>
 #include "ChildWindow.h"
+#include "Poisson.h"
+#include "MixPoisson.h"
 
 using std::cout;
 using std::endl;
+
+static Poisson poi_editor;
+static MixPoisson mixpoi_editor;
 
 ImageWidget::ImageWidget(ChildWindow* relatewindow)
 {
@@ -56,11 +61,59 @@ void ImageWidget::set_draw_status_to_paste()
 
 void ImageWidget::set_draw_status_to_paste_mix_poisson()
 {
+	// Crop the image first
+
+	// Start point in source image
+	int xsourcepos = source_window_->imagewidget_->point_start_.rx();
+	int ysourcepos = source_window_->imagewidget_->point_start_.ry();
+	// Width and Height of rectangle region
+	int w = source_window_->imagewidget_->point_end_.rx()
+		- source_window_->imagewidget_->point_start_.rx() + 1;
+	int h = source_window_->imagewidget_->point_end_.ry()
+		- source_window_->imagewidget_->point_start_.ry() + 1;
+
+	QImage croped_src(w, h, source_window_->imagewidget_->image()->format());
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+			croped_src.setPixel(i, j, source_window_->imagewidget_->image()->pixel(xsourcepos + i, ysourcepos + j));
+		}
+	}
+
+	Eigen::MatrixXi mask(h - 2 ,w - 2);
+	mask = Eigen::MatrixXi::Ones(h - 2, w - 2);
+
+	// calculate poisson preconditions
+	mixpoi_editor.setOrig(croped_src, mask);
+
 	draw_status_ = kPasteMixPoission;
 }
 
 void ImageWidget::set_draw_status_to_paste_poisson()
 {
+	// Crop the image first
+
+	// Start point in source image
+	int xsourcepos = source_window_->imagewidget_->point_start_.rx();
+	int ysourcepos = source_window_->imagewidget_->point_start_.ry();
+	// Width and Height of rectangle region
+	int w = source_window_->imagewidget_->point_end_.rx()
+		- source_window_->imagewidget_->point_start_.rx() + 1;
+	int h = source_window_->imagewidget_->point_end_.ry()
+		- source_window_->imagewidget_->point_start_.ry() + 1;
+
+	QImage croped_src(w, h, source_window_->imagewidget_->image()->format());
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+			croped_src.setPixel(i, j, source_window_->imagewidget_->image()->pixel(xsourcepos + i, ysourcepos + j));
+		}
+	}
+
+	Eigen::MatrixXi mask(h - 2 ,w - 2);
+	mask = Eigen::MatrixXi::Ones(h - 2, w - 2);
+
+	// calculate poisson preconditions
+	poi_editor.setOrig(croped_src, mask);
+
 	draw_status_ = kPastePoisson;
 }
 
@@ -109,6 +162,7 @@ void ImageWidget::mousePressEvent(QMouseEvent* mouseevent)
 			break;
 
 		case kPaste:
+		
 		{
 			is_pasting_ = true;
 
@@ -141,10 +195,97 @@ void ImageWidget::mousePressEvent(QMouseEvent* mouseevent)
 					}
 				}
 			}
+			update();
 		}
 
-		update();
-		break;
+			break;
+
+		case kPastePoisson:
+		{
+			is_pasting_ = true;
+
+			// Start point in object image
+			int xpos = mouseevent->pos().rx();
+			int ypos = mouseevent->pos().ry();
+
+			// Start point in source image
+			int xsourcepos = source_window_->imagewidget_->point_start_.rx();
+			int ysourcepos = source_window_->imagewidget_->point_start_.ry();
+
+			// Width and Height of rectangle region
+			int w = source_window_->imagewidget_->point_end_.rx()
+				- source_window_->imagewidget_->point_start_.rx() + 1;
+			int h = source_window_->imagewidget_->point_end_.ry()
+				- source_window_->imagewidget_->point_start_.ry() + 1;
+
+			// Paste
+			if ((xpos + w < image_->width()) && (ypos + h < image_->height()))
+			{
+				// Grab dest image
+				QImage dest_region(w, h, image_->format());
+				for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						dest_region.setPixelColor(i, j, image_->pixelColor(xpos + i, ypos + j));
+					}
+				}
+				QImage res = poi_editor.doTransform(dest_region);
+
+				// Paste
+				for (int i = 0; i < w; i++)
+				{
+					for (int j = 0; j < h; j++)
+					{
+						image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
+					}
+				}
+			}
+			update();
+
+		}
+			break;
+		case kPasteMixPoission:
+		{
+			is_pasting_ = true;
+
+			// Start point in object image
+			int xpos = mouseevent->pos().rx();
+			int ypos = mouseevent->pos().ry();
+
+			// Start point in source image
+			int xsourcepos = source_window_->imagewidget_->point_start_.rx();
+			int ysourcepos = source_window_->imagewidget_->point_start_.ry();
+
+			// Width and Height of rectangle region
+			int w = source_window_->imagewidget_->point_end_.rx()
+				- source_window_->imagewidget_->point_start_.rx() + 1;
+			int h = source_window_->imagewidget_->point_end_.ry()
+				- source_window_->imagewidget_->point_start_.ry() + 1;
+
+			// Paste
+			if ((xpos + w < image_->width()) && (ypos + h < image_->height()))
+			{
+				// Grab dest image
+				QImage dest_region(w, h, image_->format());
+				for (int i = 0; i < w; i++) {
+					for (int j = 0; j < h; j++) {
+						dest_region.setPixelColor(i, j, image_->pixelColor(xpos + i, ypos + j));
+					}
+				}
+				QImage res = mixpoi_editor.doTransform(dest_region);
+
+				// Paste
+				for (int i = 0; i < w; i++)
+				{
+					for (int j = 0; j < h; j++)
+					{
+						image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
+					}
+				}
+			}
+			update();
+
+		}
+			break;
 
 		default:
 			break;
@@ -199,6 +340,10 @@ void ImageWidget::mouseMoveEvent(QMouseEvent* mouseevent)
 			}
 		}
 
+	case kPastePoisson:
+
+		break;
+
 	default:
 		break;
 	}
@@ -219,6 +364,8 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent* mouseevent)
 		}
 
 	case kPaste:
+	case kPastePoisson:
+	case kPasteMixPoission:
 		if (is_pasting_)
 		{
 			is_pasting_ = false;

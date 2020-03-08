@@ -9,7 +9,7 @@
 // 1. Orig img + mask + Dest img = new img
 //    mask are w*h, but orig img are (w+2)*(h+2)
 // 2. dest img can be reloaded, and new img can be calculated instantly
-class Poisson {
+class MixPoisson {
 public:
     void setOrig(const QImage &orig, const Eigen::Matrix<int, -1, -1>& mask);
     const QImage &doTransform(const QImage &dest);
@@ -26,9 +26,6 @@ private:
     Eigen::VectorXd b_vec_r;
     Eigen::VectorXd b_vec_g;
     Eigen::VectorXd b_vec_b;
-    Eigen::MatrixXd laplace_r_orig;
-    Eigen::MatrixXd laplace_g_orig;
-    Eigen::MatrixXd laplace_b_orig;
     // Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>> solver;
     Eigen::ConjugateGradient<Eigen::SparseMatrix<double>, Eigen::Upper> solver;
 

@@ -78,6 +78,12 @@ void MainWindow::CreateActions()
 
 	action_paste_ = new QAction(tr("Paste"), this);
 	connect(action_paste_, SIGNAL(triggered()), this, SLOT(Paste()));
+
+	action_paste_poisson_ = new QAction(tr("Paste Poisson"), this);
+	connect(action_paste_poisson_, SIGNAL(triggered()), this, SLOT(PastePoisson()));
+
+	action_paste_mixpoisson_ = new QAction(tr("Paste MixPoisson"), this);
+	connect(action_paste_mixpoisson_, SIGNAL(triggered()), this, SLOT(PasteMixPoisson()));
 }
 
 void MainWindow::CreateMenus()
@@ -118,6 +124,8 @@ void MainWindow::CreateToolBars()
 	toolbar_file_->addAction(action_choose_rect_);
 	toolbar_file_->addAction(action_choose_polygon_);
 	toolbar_file_->addAction(action_paste_);
+	toolbar_file_->addAction(action_paste_poisson_);
+	toolbar_file_->addAction(action_paste_mixpoisson_);
 }
 
 void MainWindow::CreateStatusBar()
@@ -258,6 +266,31 @@ void MainWindow::Paste()
 	window->imagewidget_->set_draw_status_to_paste();
 	window->imagewidget_->set_source_window(child_source_);
 }
+
+
+void MainWindow::PastePoisson()
+{
+	// Paste image rect region to object image
+	ChildWindow* window = GetChildWindow();
+	if (!window)
+		return;
+
+	window->imagewidget_->set_source_window(child_source_);
+	window->imagewidget_->set_draw_status_to_paste_poisson();
+}
+
+void MainWindow::PasteMixPoisson()
+{
+	// Paste image rect region to object image
+	ChildWindow* window = GetChildWindow();
+	if (!window)
+		return;
+	
+	window->imagewidget_->set_source_window(child_source_);
+	window->imagewidget_->set_draw_status_to_paste_mix_poisson();
+}
+
+
 
 QMdiSubWindow *MainWindow::FindChild(const QString &filename)
 {

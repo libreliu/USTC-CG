@@ -40,6 +40,8 @@ private slots:
 	void ChooseRect();							// Choose rectangle region
 	void ChoosePoly();
 	void Paste();								// Paste rect region to object image
+	void PastePoisson();
+	void PasteMixPoisson();
 
 private:
 	void CreateActions();
@@ -72,6 +74,8 @@ private:
 	QAction						*action_choose_polygon_;
 	QAction						*action_copy_;
 	QAction						*action_paste_;
+	QAction                     *action_paste_poisson_;
+	QAction                     *action_paste_mixpoisson_;
 
 	QMdiArea					*mdi_area_;
 	QSignalMapper				*window_mapper_;
