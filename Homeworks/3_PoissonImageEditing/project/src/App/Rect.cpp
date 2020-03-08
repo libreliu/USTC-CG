@@ -6,6 +6,7 @@ Rect::Rect()
 {
 	this->setAttr("point-required", 2);
 	this->setAttr("mask-matrix-valid", 1);
+	this->mask_mat_valid = false;
 }
 
 Rect::~Rect()
@@ -26,7 +27,7 @@ const Eigen::Matrix<int, -1, -1> &DrawContext::Rect::getMaskMatrix()
 		return mask_mat;
 	} else {
 		QRect rect = getBoundingRect();
-		mask_mat = Eigen::Matrix<int, -1, -1>::Ones(rect.width(), rect.height());
+		mask_mat = Eigen::Matrix<int, -1, -1>::Ones(rect.height(), rect.width());
 		mask_mat_valid = true;
 		return mask_mat;
 	}

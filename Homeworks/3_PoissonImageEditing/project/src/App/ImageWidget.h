@@ -1,5 +1,7 @@
 #pragma once
 #include <QWidget>
+#include "Shape.h"
+#include "ShapeManager.h"
 
 class ChildWindow;
 QT_BEGIN_NAMESPACE
@@ -55,12 +57,11 @@ public slots:
 	void Restore();												// Restore image to origin
 
 public:
-	QPoint						point_start_;					// Left top point of rectangle region
-	QPoint						point_end_;						// Right bottom point of rectangle region
 
 private:
 	QImage						*image_;						// image 
 	QImage						*image_backup_;
+	DrawContext::Shape			*selection_area_;
 
 	// Pointer of child window
 	ChildWindow					*source_window_;				// Source child window

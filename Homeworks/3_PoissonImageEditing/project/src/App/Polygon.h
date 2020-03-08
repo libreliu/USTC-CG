@@ -11,6 +11,7 @@ namespace DrawContext {
 		~Polygon();
 
 		void Draw(QPainter& painter);
+		const Eigen::Matrix<int, -1, -1> &getMaskMatrix() override;
 	};
 
 }

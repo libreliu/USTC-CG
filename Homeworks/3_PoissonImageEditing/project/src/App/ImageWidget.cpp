@@ -1,11 +1,11 @@
 #include "ImageWidget.h"
+#include "ChildWindow.h"
+#include "MixPoisson.h"
+#include "Poisson.h"
 #include <QImage>
 #include <QPainter>
-#include <QtWidgets> 
+#include <QtWidgets>
 #include <iostream>
-#include "ChildWindow.h"
-#include "Poisson.h"
-#include "MixPoisson.h"
 
 using std::cout;
 using std::endl;
@@ -13,492 +13,495 @@ using std::endl;
 static Poisson poi_editor;
 static MixPoisson mixpoi_editor;
 
-ImageWidget::ImageWidget(ChildWindow* relatewindow)
-{
-	image_ = new QImage();
-	image_backup_ = new QImage();
+ImageWidget::ImageWidget(ChildWindow *relatewindow) {
+  image_ = new QImage();
+  image_backup_ = new QImage();
 
-	draw_status_ = kNone;
-	is_choosing_ = false;
-	is_pasting_ = false;
+  draw_status_ = kNone;
+  is_choosing_ = false;
+  is_pasting_ = false;
 
-	point_start_ = QPoint(0, 0);
-	point_end_ = QPoint(0, 0);
-
-	source_window_ = NULL;
+  source_window_ = NULL;
+  selection_area_ = NULL;
 }
 
-ImageWidget::~ImageWidget(void)
-{
-	delete image_;
-	delete image_backup_;
+ImageWidget::~ImageWidget(void) {
+  delete image_;
+  delete image_backup_;
+  if (selection_area_) {
+    delete selection_area_;
+  }
 }
 
-int ImageWidget::ImageWidth()
-{
-	return image_->width();
+int ImageWidget::ImageWidth() { return image_->width(); }
+
+int ImageWidget::ImageHeight() { return image_->height(); }
+
+void ImageWidget::set_draw_status_to_choose() {
+  draw_status_ = kChoose;
+  is_choosing_ = false;
 }
 
-int ImageWidget::ImageHeight()
-{
-	return image_->height();
+void ImageWidget::set_draw_status_to_choose_poly() {
+  draw_status_ = kChoosePoly;
 }
 
-void ImageWidget::set_draw_status_to_choose()
-{
-	draw_status_ = kChoose;	
+void ImageWidget::set_draw_status_to_paste() { draw_status_ = kPaste; }
+
+void ImageWidget::set_draw_status_to_paste_mix_poisson() {
+  // Start point in source image
+  QRect src_bounding =
+      source_window_->imagewidget_->selection_area_->getBoundingRect();
+
+  int xsourcepos = src_bounding.topLeft().x();
+  int ysourcepos = src_bounding.topLeft().y();
+  printf("xsrc=%d, ysrc=%d\n", xsourcepos, ysourcepos);
+
+  Eigen::MatrixXi mask;
+  bool got_mask = false;
+  try {
+    mask = source_window_->imagewidget_->selection_area_->getMaskMatrix();
+    printf("mask, r=%d, c=%d\n", mask.rows(), mask.cols());
+    got_mask = true;
+  } catch (DrawContext::mask_too_small) {
+    printf("Warning suppressed..\n");
+  }
+
+  // Width and Height of rectangle region
+  int w = src_bounding.width();
+  int h = src_bounding.height();
+  printf("src_bounding_w=%d, src_bounding_h=%d\n", w, h);
+
+  QImage croped_src(w, h, source_window_->imagewidget_->image()->format());
+  for (int i = 0; i < w; i++) {
+    for (int j = 0; j < h; j++) {
+      croped_src.setPixel(i, j,
+                          source_window_->imagewidget_->image()->pixel(
+                              xsourcepos + i, ysourcepos + j));
+    }
+  }
+
+  Eigen::MatrixXi mask_real(h - 2, w - 2);
+  mask_real = mask.block(1, 1, mask.rows() - 2, mask.cols() - 2);
+
+  // calculate poisson preconditions
+  mixpoi_editor.setOrig(croped_src, mask_real);
+
+  draw_status_ = kPasteMixPoission;
 }
 
-void ImageWidget::set_draw_status_to_choose_poly()
-{
-	draw_status_ = kChoosePoly;
+void ImageWidget::set_draw_status_to_paste_poisson() {
+  // Start point in source image
+  QRect src_bounding =
+      source_window_->imagewidget_->selection_area_->getBoundingRect();
+
+  int xsourcepos = src_bounding.topLeft().x();
+  int ysourcepos = src_bounding.topLeft().y();
+  printf("xsrc=%d, ysrc=%d\n", xsourcepos, ysourcepos);
+
+  Eigen::MatrixXi mask;
+  bool got_mask = false;
+  try {
+    mask = source_window_->imagewidget_->selection_area_->getMaskMatrix();
+    printf("mask, r=%d, c=%d\n", mask.rows(), mask.cols());
+    got_mask = true;
+  } catch (DrawContext::mask_too_small) {
+    printf("Warning suppressed..\n");
+  }
+
+  // Width and Height of rectangle region
+  int w = src_bounding.width();
+  int h = src_bounding.height();
+  printf("src_bounding_w=%d, src_bounding_h=%d\n", w, h);
+
+  QImage croped_src(w, h, source_window_->imagewidget_->image()->format());
+  for (int i = 0; i < w; i++) {
+    for (int j = 0; j < h; j++) {
+      croped_src.setPixel(i, j,
+                          source_window_->imagewidget_->image()->pixel(
+                              xsourcepos + i, ysourcepos + j));
+    }
+  }
+
+  Eigen::MatrixXi mask_real(h - 2, w - 2);
+  mask_real = mask.block(1, 1, mask.rows() - 2, mask.cols() - 2);
+
+  // calculate poisson preconditions
+  poi_editor.setOrig(croped_src, mask_real);
+
+  draw_status_ = kPastePoisson;
 }
 
-void ImageWidget::set_draw_status_to_paste()
-{
-	draw_status_ = kPaste;
+QImage *ImageWidget::image() { return image_; }
+
+void ImageWidget::set_source_window(ChildWindow *childwindow) {
+  source_window_ = childwindow;
 }
 
-void ImageWidget::set_draw_status_to_paste_mix_poisson()
-{
-	// Crop the image first
+void ImageWidget::paintEvent(QPaintEvent *paintevent) {
+  QPainter painter;
+  painter.begin(this);
 
-	// Start point in source image
-	int xsourcepos = source_window_->imagewidget_->point_start_.rx();
-	int ysourcepos = source_window_->imagewidget_->point_start_.ry();
-	// Width and Height of rectangle region
-	int w = source_window_->imagewidget_->point_end_.rx()
-		- source_window_->imagewidget_->point_start_.rx() + 1;
-	int h = source_window_->imagewidget_->point_end_.ry()
-		- source_window_->imagewidget_->point_start_.ry() + 1;
+  // Draw background
+  painter.setBrush(Qt::lightGray);
+  QRect back_rect(0, 0, width(), height());
+  painter.drawRect(back_rect);
 
-	QImage croped_src(w, h, source_window_->imagewidget_->image()->format());
-	for (int i = 0; i < w; i++) {
-		for (int j = 0; j < h; j++) {
-			croped_src.setPixel(i, j, source_window_->imagewidget_->image()->pixel(xsourcepos + i, ysourcepos + j));
-		}
-	}
+  // Draw image
+  QRect rect = QRect(0, 0, image_->width(), image_->height());
+  painter.drawImage(rect, *image_);
 
-	Eigen::MatrixXi mask(h - 2 ,w - 2);
-	mask = Eigen::MatrixXi::Ones(h - 2, w - 2);
+  // Draw choose region
+  painter.setBrush(Qt::NoBrush);
+  painter.setPen(Qt::red);
+  // painter.drawRect(point_start_.x(), point_start_.y(),
+  // 	point_end_.x() - point_start_.x(), point_end_.y() - point_start_.y());
+  if (selection_area_) {
+    selection_area_->Draw(painter);
+    selection_area_->DrawCtrlPoints(painter);
+  }
 
-	// calculate poisson preconditions
-	mixpoi_editor.setOrig(croped_src, mask);
-
-	draw_status_ = kPasteMixPoission;
+  painter.end();
 }
 
-void ImageWidget::set_draw_status_to_paste_poisson()
-{
-	// Crop the image first
+void ImageWidget::mousePressEvent(QMouseEvent *mouseevent) {
+  if (Qt::LeftButton == mouseevent->button()) {
+    switch (draw_status_) {
+    case kChoose:
+      if (!is_choosing_) {
+        is_choosing_ = true;
+        if (selection_area_ != NULL) {
+          delete selection_area_;
+        }
+        selection_area_ = DrawContext::ShapeManager::getFactory(
+            DrawContext::ShapeManager::ShapeType::Rect)(0);
+        selection_area_->addCtrlPoint(mouseevent->pos());
+      } else { // add a point, or finish if max point exceeded
+        assert(selection_area_ != NULL);
+        int max_points = selection_area_->getAttr("point-required");
+        if (max_points > 0 &&
+            max_points <=
+                selection_area_->getCtrlPoints().size()) { // already had enough
+          // modify the last point, and mark the entire mission finish
+          selection_area_->setAttr("finished", 1);
+          draw_status_ = kNone;
+          is_choosing_ = false;
+        } else {
+          selection_area_->addCtrlPoint(mouseevent->pos());
+        }
+      }
 
-	// Start point in source image
-	int xsourcepos = source_window_->imagewidget_->point_start_.rx();
-	int ysourcepos = source_window_->imagewidget_->point_start_.ry();
-	// Width and Height of rectangle region
-	int w = source_window_->imagewidget_->point_end_.rx()
-		- source_window_->imagewidget_->point_start_.rx() + 1;
-	int h = source_window_->imagewidget_->point_end_.ry()
-		- source_window_->imagewidget_->point_start_.ry() + 1;
+      // point_start_ = point_end_ = mouseevent->pos();
+      break;
 
-	QImage croped_src(w, h, source_window_->imagewidget_->image()->format());
-	for (int i = 0; i < w; i++) {
-		for (int j = 0; j < h; j++) {
-			croped_src.setPixel(i, j, source_window_->imagewidget_->image()->pixel(xsourcepos + i, ysourcepos + j));
-		}
-	}
+    case kPaste:
 
-	Eigen::MatrixXi mask(h - 2 ,w - 2);
-	mask = Eigen::MatrixXi::Ones(h - 2, w - 2);
+    {
+      is_pasting_ = true;
 
-	// calculate poisson preconditions
-	poi_editor.setOrig(croped_src, mask);
+      // Start point in object image
+      int xpos = mouseevent->pos().rx();
+      int ypos = mouseevent->pos().ry();
 
-	draw_status_ = kPastePoisson;
+      // Start point in source image
+      QRect src_bounding =
+          source_window_->imagewidget_->selection_area_->getBoundingRect();
+
+      int xsourcepos = src_bounding.topLeft().x();
+      int ysourcepos = src_bounding.topLeft().y();
+      printf("xsrc=%d, ysrc=%d\n", xsourcepos, ysourcepos);
+
+      Eigen::MatrixXi mask;
+      bool got_mask = false;
+      try {
+        mask = source_window_->imagewidget_->selection_area_->getMaskMatrix();
+        printf("mask, r=%d, c=%d\n", mask.rows(), mask.cols());
+        got_mask = true;
+      } catch (DrawContext::mask_too_small) {
+        printf("Warning suppressed..\n");
+      }
+
+      // Width and Height of rectangle region
+      int w = src_bounding.width();
+      int h = src_bounding.height();
+      printf("src_bounding_w=%d, src_bounding_h=%d\n", w, h);
+
+#define IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(p, q)                            \
+  ((((p)) >= 0 && ((p)) < ((h)) && ((q)) >= 0 && ((q)) < ((w)) && got_mask &&  \
+    mask(((p)), ((q))) > 0))
+      // Paste
+      if ((xpos + w < image_->width()) && (ypos + h < image_->height())) {
+        // Restore image
+        //	*(image_) = *(image_backup_);
+
+        // Paste
+        for (int i = 0; i < w; i++) {
+          for (int j = 0; j < h; j++) {
+            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(i - 1, j - 1))
+              image_->setPixel(xpos + i, ypos + j,
+                               source_window_->imagewidget_->image()->pixel(
+                                   xsourcepos + i, ysourcepos + j));
+          }
+        }
+      }
+      update();
+    }
+
+    break;
+
+    case kPastePoisson: {
+      is_pasting_ = true;
+
+      // Start point in object image
+      int xpos = mouseevent->pos().rx();
+      int ypos = mouseevent->pos().ry();
+
+      // Start point in source image
+      QRect src_bounding =
+          source_window_->imagewidget_->selection_area_->getBoundingRect();
+
+      int xsourcepos = src_bounding.topLeft().x();
+      int ysourcepos = src_bounding.topLeft().y();
+      printf("xsrc=%d, ysrc=%d\n", xsourcepos, ysourcepos);
+
+      // Width and Height of rectangle region
+      int w = src_bounding.width();
+      int h = src_bounding.height();
+      printf("src_bounding_w=%d, src_bounding_h=%d\n", w, h);
+
+      Eigen::MatrixXi mask;
+      bool got_mask = false;
+      try {
+        mask = source_window_->imagewidget_->selection_area_->getMaskMatrix();
+        printf("mask, r=%d, c=%d\n", mask.rows(), mask.cols());
+        got_mask = true;
+      } catch (DrawContext::mask_too_small) {
+        printf("Warning suppressed..\n");
+      }
+
+      // Paste
+      if ((xpos + w < image_->width()) && (ypos + h < image_->height())) {
+        // Grab dest image
+        QImage dest_region(w, h, image_->format());
+        for (int i = 0; i < w; i++) {
+          for (int j = 0; j < h; j++) {
+            dest_region.setPixelColor(i, j,
+                                      image_->pixelColor(xpos + i, ypos + j));
+          }
+        }
+        QImage res = poi_editor.doTransform(dest_region);
+
+        // Paste
+        for (int i = 0; i < w; i++) {
+          for (int j = 0; j < h; j++) {
+            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(i - 1, j - 1))
+              image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
+          }
+        }
+      }
+      update();
+
+    } break;
+    case kPasteMixPoission: {
+      is_pasting_ = true;
+
+      // Start point in object image
+      int xpos = mouseevent->pos().rx();
+      int ypos = mouseevent->pos().ry();
+
+      // Start point in source image
+      QRect src_bounding =
+          source_window_->imagewidget_->selection_area_->getBoundingRect();
+
+      int xsourcepos = src_bounding.topLeft().x();
+      int ysourcepos = src_bounding.topLeft().y();
+      printf("xsrc=%d, ysrc=%d\n", xsourcepos, ysourcepos);
+
+      // Width and Height of rectangle region
+      int w = src_bounding.width();
+      int h = src_bounding.height();
+      printf("src_bounding_w=%d, src_bounding_h=%d\n", w, h);
+
+      Eigen::MatrixXi mask;
+      bool got_mask = false;
+      try {
+        mask = source_window_->imagewidget_->selection_area_->getMaskMatrix();
+        printf("mask, r=%d, c=%d\n", mask.rows(), mask.cols());
+        got_mask = true;
+      } catch (DrawContext::mask_too_small) {
+        printf("Warning suppressed..\n");
+      }
+
+      // Paste
+      if ((xpos + w < image_->width()) && (ypos + h < image_->height())) {
+        // Grab dest image
+        QImage dest_region(w, h, image_->format());
+        for (int i = 0; i < w; i++) {
+          for (int j = 0; j < h; j++) {
+            dest_region.setPixelColor(i, j,
+                                      image_->pixelColor(xpos + i, ypos + j));
+          }
+        }
+        QImage res = mixpoi_editor.doTransform(dest_region);
+
+        // Paste
+        for (int i = 0; i < w; i++) {
+          for (int j = 0; j < h; j++) {
+            if (IS_INNER_OR_BOUNDARY_AND_WITHIN_RANGE(i - 1, j - 1))
+              image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
+          }
+        }
+      }
+      update();
+
+    } break;
+
+    default:
+      break;
+    }
+  }
 }
 
-QImage* ImageWidget::image()
-{
-	return image_;
+void ImageWidget::mouseMoveEvent(QMouseEvent *mouseevent) {
+  switch (draw_status_) {
+  case kChoose:
+    break;
+
+  case kPaste:
+
+  break;
+
+case kPastePoisson:
+
+  break;
+
+default:
+  break;
 }
 
-void ImageWidget::set_source_window(ChildWindow* childwindow)
-{
-	source_window_ = childwindow;
+update();
 }
 
-void ImageWidget::paintEvent(QPaintEvent* paintevent)
-{
-	QPainter painter;
-	painter.begin(this);
+void ImageWidget::mouseReleaseEvent(QMouseEvent *mouseevent) {
+  switch (draw_status_) {
+  case kChoose:
+    // if (is_choosing_)
+    // {
+    // 	point_end_ = mouseevent->pos();
+    // 	is_choosing_ = false;
+    // 	draw_status_ = kNone;
+    // }
 
-	// Draw background
-	painter.setBrush(Qt::lightGray);
-	QRect back_rect(0, 0, width(), height());
-	painter.drawRect(back_rect);
+  case kPaste:
+  case kPastePoisson:
+  case kPasteMixPoission:
+    // if (is_pasting_) {
+    //   is_pasting_ = false;
+    //   draw_status_ = kNone;
+    // }
 
-	// Draw image
-	QRect rect = QRect(0, 0, image_->width(), image_->height());
-	painter.drawImage(rect, *image_);
+  default:
+    break;
+  }
 
-	// Draw choose region
-	painter.setBrush(Qt::NoBrush);
-	painter.setPen(Qt::red);
-	painter.drawRect(point_start_.x(), point_start_.y(),
-		point_end_.x() - point_start_.x(), point_end_.y() - point_start_.y());
-
-	painter.end();
+  update();
 }
 
-void ImageWidget::mousePressEvent(QMouseEvent* mouseevent)
-{
-	if (Qt::LeftButton == mouseevent->button())
-	{
-		switch (draw_status_)
-		{
-		case kChoose:
-			is_choosing_ = true;
-			point_start_ = point_end_ = mouseevent->pos();
-			break;
+void ImageWidget::Open(QString filename) {
+  // Load file
+  if (!filename.isEmpty()) {
+    image_->load(filename);
+    *(image_backup_) = *(image_);
+  }
 
-		case kPaste:
-		
-		{
-			is_pasting_ = true;
+  //	setFixedSize(image_->width(), image_->height());
+  //	relate_window_->setWindowFlags(Qt::Dialog);
+  //	relate_window_->setFixedSize(QSize(image_->width(), image_->height()));
+  //	relate_window_->setWindowFlags(Qt::SubWindow);
 
-			// Start point in object image
-			int xpos = mouseevent->pos().rx();
-			int ypos = mouseevent->pos().ry();
-
-			// Start point in source image
-			int xsourcepos = source_window_->imagewidget_->point_start_.rx();
-			int ysourcepos = source_window_->imagewidget_->point_start_.ry();
-
-			// Width and Height of rectangle region
-			int w = source_window_->imagewidget_->point_end_.rx()
-				- source_window_->imagewidget_->point_start_.rx() + 1;
-			int h = source_window_->imagewidget_->point_end_.ry()
-				- source_window_->imagewidget_->point_start_.ry() + 1;
-
-			// Paste
-			if ((xpos + w < image_->width()) && (ypos + h < image_->height()))
-			{
-				// Restore image
-			//	*(image_) = *(image_backup_);
-
-				// Paste
-				for (int i = 0; i < w; i++)
-				{
-					for (int j = 0; j < h; j++)
-					{
-						image_->setPixel(xpos + i, ypos + j, source_window_->imagewidget_->image()->pixel(xsourcepos + i, ysourcepos + j));
-					}
-				}
-			}
-			update();
-		}
-
-			break;
-
-		case kPastePoisson:
-		{
-			is_pasting_ = true;
-
-			// Start point in object image
-			int xpos = mouseevent->pos().rx();
-			int ypos = mouseevent->pos().ry();
-
-			// Start point in source image
-			int xsourcepos = source_window_->imagewidget_->point_start_.rx();
-			int ysourcepos = source_window_->imagewidget_->point_start_.ry();
-
-			// Width and Height of rectangle region
-			int w = source_window_->imagewidget_->point_end_.rx()
-				- source_window_->imagewidget_->point_start_.rx() + 1;
-			int h = source_window_->imagewidget_->point_end_.ry()
-				- source_window_->imagewidget_->point_start_.ry() + 1;
-
-			// Paste
-			if ((xpos + w < image_->width()) && (ypos + h < image_->height()))
-			{
-				// Grab dest image
-				QImage dest_region(w, h, image_->format());
-				for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						dest_region.setPixelColor(i, j, image_->pixelColor(xpos + i, ypos + j));
-					}
-				}
-				QImage res = poi_editor.doTransform(dest_region);
-
-				// Paste
-				for (int i = 0; i < w; i++)
-				{
-					for (int j = 0; j < h; j++)
-					{
-						image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
-					}
-				}
-			}
-			update();
-
-		}
-			break;
-		case kPasteMixPoission:
-		{
-			is_pasting_ = true;
-
-			// Start point in object image
-			int xpos = mouseevent->pos().rx();
-			int ypos = mouseevent->pos().ry();
-
-			// Start point in source image
-			int xsourcepos = source_window_->imagewidget_->point_start_.rx();
-			int ysourcepos = source_window_->imagewidget_->point_start_.ry();
-
-			// Width and Height of rectangle region
-			int w = source_window_->imagewidget_->point_end_.rx()
-				- source_window_->imagewidget_->point_start_.rx() + 1;
-			int h = source_window_->imagewidget_->point_end_.ry()
-				- source_window_->imagewidget_->point_start_.ry() + 1;
-
-			// Paste
-			if ((xpos + w < image_->width()) && (ypos + h < image_->height()))
-			{
-				// Grab dest image
-				QImage dest_region(w, h, image_->format());
-				for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
-						dest_region.setPixelColor(i, j, image_->pixelColor(xpos + i, ypos + j));
-					}
-				}
-				QImage res = mixpoi_editor.doTransform(dest_region);
-
-				// Paste
-				for (int i = 0; i < w; i++)
-				{
-					for (int j = 0; j < h; j++)
-					{
-						image_->setPixelColor(xpos + i, ypos + j, res.pixelColor(i, j));
-					}
-				}
-			}
-			update();
-
-		}
-			break;
-
-		default:
-			break;
-		}
-	}
+  // image_->invertPixels(QImage::InvertRgb);
+  //*(image_) = image_->mirrored(true, true);
+  //*(image_) = image_->rgbSwapped();
+  cout << "image size: " << image_->width() << ' ' << image_->height() << endl;
+  update();
 }
 
-void ImageWidget::mouseMoveEvent(QMouseEvent* mouseevent)
-{
-	switch (draw_status_)
-	{
-	case kChoose:
-		// Store point position for rectangle region
-		if (is_choosing_)
-		{
-			point_end_ = mouseevent->pos();
-		}
-		break;
+void ImageWidget::Save() { SaveAs(); }
 
-	case kPaste:
-		// Paste rectangle region to object image
-		if (is_pasting_)
-		{
-			// Start point in object image
-			int xpos = mouseevent->pos().rx();
-			int ypos = mouseevent->pos().ry();
+void ImageWidget::SaveAs() {
+  QString filename = QFileDialog::getSaveFileName(
+      this, tr("Save Image"), ".", tr("Images(*.bmp *.png *.jpg)"));
+  if (filename.isNull()) {
+    return;
+  }
 
-			// Start point in source image
-			int xsourcepos = source_window_->imagewidget_->point_start_.rx();
-			int ysourcepos = source_window_->imagewidget_->point_start_.ry();
-
-			// Width and Height of rectangle region
-			int w = source_window_->imagewidget_->point_end_.rx()
-				- source_window_->imagewidget_->point_start_.rx() + 1;
-			int h = source_window_->imagewidget_->point_end_.ry()
-				- source_window_->imagewidget_->point_start_.ry() + 1;
-
-			// Paste
-			if ((xpos > 0) && (ypos > 0) && (xpos + w < image_->width()) && (ypos + h < image_->height()))
-			{
-				// Restore image 
-				*(image_) = *(image_backup_);
-
-				// Paste
-				for (int i = 0; i < w; i++)
-				{
-					for (int j = 0; j < h; j++)
-					{
-						image_->setPixel(xpos + i, ypos + j, source_window_->imagewidget_->image()->pixel(xsourcepos + i, ysourcepos + j));
-					}
-				}
-			}
-		}
-
-	case kPastePoisson:
-
-		break;
-
-	default:
-		break;
-	}
-
-	update();
+  image_->save(filename);
 }
 
-void ImageWidget::mouseReleaseEvent(QMouseEvent* mouseevent)
-{
-	switch (draw_status_)
-	{
-	case kChoose:
-		if (is_choosing_)
-		{
-			point_end_ = mouseevent->pos();
-			is_choosing_ = false;
-			draw_status_ = kNone;
-		}
+void ImageWidget::Invert() {
+  for (int i = 0; i < image_->width(); i++) {
+    for (int j = 0; j < image_->height(); j++) {
+      QRgb color = image_->pixel(i, j);
+      image_->setPixel(
+          i, j,
+          qRgb(255 - qRed(color), 255 - qGreen(color), 255 - qBlue(color)));
+    }
+  }
 
-	case kPaste:
-	case kPastePoisson:
-	case kPasteMixPoission:
-		if (is_pasting_)
-		{
-			is_pasting_ = false;
-			draw_status_ = kNone;
-		}
-
-	default:
-		break;
-	}
-
-	update();
+  // equivalent member function of class QImage
+  // image_->invertPixels(QImage::InvertRgb);
+  update();
 }
 
-void ImageWidget::Open(QString filename)
-{
-	// Load file
-	if (!filename.isEmpty())
-	{
-		image_->load(filename);
-		*(image_backup_) = *(image_);
-	}
+void ImageWidget::Mirror(bool ishorizontal, bool isvertical) {
+  QImage image_tmp(*(image_));
+  int width = image_->width();
+  int height = image_->height();
 
-	//	setFixedSize(image_->width(), image_->height());
-	//	relate_window_->setWindowFlags(Qt::Dialog);
-	//	relate_window_->setFixedSize(QSize(image_->width(), image_->height()));
-	//	relate_window_->setWindowFlags(Qt::SubWindow);
+  if (ishorizontal) {
+    if (isvertical) {
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+          image_->setPixel(i, j,
+                           image_tmp.pixel(width - 1 - i, height - 1 - j));
+        }
+      }
+    } else {
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+          image_->setPixel(i, j, image_tmp.pixel(i, height - 1 - j));
+        }
+      }
+    }
 
-		//image_->invertPixels(QImage::InvertRgb);
-		//*(image_) = image_->mirrored(true, true);
-		//*(image_) = image_->rgbSwapped();
-	cout << "image size: " << image_->width() << ' ' << image_->height() << endl;
-	update();
+  } else {
+    if (isvertical) {
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+          image_->setPixel(i, j, image_tmp.pixel(width - 1 - i, j));
+        }
+      }
+    }
+  }
+
+  // equivalent member function of class QImage
+  //*(image_) = image_->mirrored(true, true);
+  update();
 }
 
-void ImageWidget::Save()
-{
-	SaveAs();
+void ImageWidget::TurnGray() {
+  for (int i = 0; i < image_->width(); i++) {
+    for (int j = 0; j < image_->height(); j++) {
+      QRgb color = image_->pixel(i, j);
+      int gray_value = (qRed(color) + qGreen(color) + qBlue(color)) / 3;
+      image_->setPixel(i, j, qRgb(gray_value, gray_value, gray_value));
+    }
+  }
+
+  update();
 }
 
-void ImageWidget::SaveAs()
-{
-	QString filename = QFileDialog::getSaveFileName(this, tr("Save Image"), ".", tr("Images(*.bmp *.png *.jpg)"));
-	if (filename.isNull())
-	{
-		return;
-	}
-
-	image_->save(filename);
-}
-
-void ImageWidget::Invert()
-{
-	for (int i = 0; i < image_->width(); i++)
-	{
-		for (int j = 0; j < image_->height(); j++)
-		{
-			QRgb color = image_->pixel(i, j);
-			image_->setPixel(i, j, qRgb(255 - qRed(color), 255 - qGreen(color), 255 - qBlue(color)));
-		}
-	}
-
-	// equivalent member function of class QImage
-	// image_->invertPixels(QImage::InvertRgb);
-	update();
-}
-
-void ImageWidget::Mirror(bool ishorizontal, bool isvertical)
-{
-	QImage image_tmp(*(image_));
-	int width = image_->width();
-	int height = image_->height();
-
-	if (ishorizontal)
-	{
-		if (isvertical)
-		{
-			for (int i = 0; i < width; i++)
-			{
-				for (int j = 0; j < height; j++)
-				{
-					image_->setPixel(i, j, image_tmp.pixel(width - 1 - i, height - 1 - j));
-				}
-			}
-		}
-		else
-		{
-			for (int i = 0; i < width; i++)
-			{
-				for (int j = 0; j < height; j++)
-				{
-					image_->setPixel(i, j, image_tmp.pixel(i, height - 1 - j));
-				}
-			}
-		}
-
-	}
-	else
-	{
-		if (isvertical)
-		{
-			for (int i = 0; i < width; i++)
-			{
-				for (int j = 0; j < height; j++)
-				{
-					image_->setPixel(i, j, image_tmp.pixel(width - 1 - i, j));
-				}
-			}
-		}
-	}
-
-	// equivalent member function of class QImage
-	//*(image_) = image_->mirrored(true, true);
-	update();
-}
-
-void ImageWidget::TurnGray()
-{
-	for (int i = 0; i < image_->width(); i++)
-	{
-		for (int j = 0; j < image_->height(); j++)
-		{
-			QRgb color = image_->pixel(i, j);
-			int gray_value = (qRed(color) + qGreen(color) + qBlue(color)) / 3;
-			image_->setPixel(i, j, qRgb(gray_value, gray_value, gray_value));
-		}
-	}
-
-	update();
-}
-
-void ImageWidget::Restore()
-{
-	*(image_) = *(image_backup_);
-	point_start_ = point_end_ = QPoint(0, 0);
-	update();
+void ImageWidget::Restore() {
+  *(image_) = *(image_backup_);
+  update();
 }

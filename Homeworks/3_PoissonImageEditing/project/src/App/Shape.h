@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include <QtGui>
 #include <QRect>
+#include <exception> 
 
 /* The Shape class now contains every control point a object is required to display
  * Also a dedicated method for painting the points is given
@@ -78,5 +79,12 @@ namespace DrawContext {
 	//class Segment {
 
 	//};
+
+	class mask_too_small : public std::exception {
+		public:  
+			mask_too_small() {
+				fprintf(stderr, "got my mask too small!\n");
+			}
+	};
 
 };

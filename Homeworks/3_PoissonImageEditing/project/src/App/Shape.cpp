@@ -22,7 +22,12 @@ QRect DrawContext::Shape::getBoundingRect()
 		int ymax = 0;
 		int xmin = 0;
 		int xmax = 0;
+		if (ctrl_points.size() != 0) {
+			ymin = ymax = ctrl_points[0].y();
+			xmin = xmax = ctrl_points[0].x();
+		}
 		for (auto& p : ctrl_points) {
+			printf("got ctrl_point: (%d, %d)\n", p.x(), p.y());
 			assert(p.x() >= 0 && p.y() >= 0);
 			if (p.x() > xmax) {
 				xmax = p.x();

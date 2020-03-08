@@ -93,6 +93,8 @@ const QImage &MixPoisson::doTransform(const QImage &dest) {
     printf("orig: width=%d, height=%d\n", orig.width(), orig.height());
     printf("dest: width=%d, height=%d\n", dest.width(), dest.height());
 
+    b_vec_r = b_vec_g = b_vec_b = Eigen::VectorXd::Zero(w * h);
+
     // make up the remaining pieces for b_vec
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
