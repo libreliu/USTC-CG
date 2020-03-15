@@ -344,8 +344,30 @@ void Attribute::ComponentVisitor::ImplVisit(Ptr<TriMesh> mesh) {
 		pOGLW->DirtyVAO(mesh);
 	});
 
-	grid->AddButton("Paramaterize", [mesh, pOGLW = attr->pOGLW]() {
-		auto paramaterize = Paramaterize::New(mesh);
+	grid->AddButton("Para (Square, Uniform)", [mesh, pOGLW = attr->pOGLW]() {
+		auto paramaterize = Paramaterize::New(mesh, true, true);
+		if (paramaterize->Run())
+			printf("Paramaterize done\n");
+		pOGLW->DirtyVAO(mesh);
+	});
+
+	grid->AddButton("Para (Square, Cotangent)", [mesh, pOGLW = attr->pOGLW]() {
+		auto paramaterize = Paramaterize::New(mesh, true, false);
+		if (paramaterize->Run())
+			printf("Paramaterize done\n");
+		pOGLW->DirtyVAO(mesh);
+	});
+
+	grid->AddButton("Para (Circle, Uniform)", [mesh, pOGLW = attr->pOGLW]() {
+		auto paramaterize = Paramaterize::New(mesh, false, true);
+		if (paramaterize->Run())
+			printf("Paramaterize done\n");
+		pOGLW->DirtyVAO(mesh);
+	});
+
+
+	grid->AddButton("Para (Circle, Cotangent)", [mesh, pOGLW = attr->pOGLW]() {
+		auto paramaterize = Paramaterize::New(mesh, false, false);
 		if (paramaterize->Run())
 			printf("Paramaterize done\n");
 		pOGLW->DirtyVAO(mesh);
@@ -787,10 +809,10 @@ void Attribute::SetSObj(Ptr<SObj> sobj) {
 		pair.second->Clear();
 	item2grid.clear();
 
-	// Ò»¸ö component ¶ÔÓ¦Ò»¸ö widget
+	// Ò»ï¿½ï¿½ component ï¿½ï¿½Ó¦Ò»ï¿½ï¿½ widget
 	int num = tbox->count();
 	while (num-- > 0) {
-		// remove item ²»»áÉ¾³ý item
+		// remove item ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ item
 		auto item = tbox->widget(0);
 		tbox->removeItem(0);
 		item->deleteLater();

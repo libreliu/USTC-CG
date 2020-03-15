@@ -3,6 +3,7 @@
 #include <Engine/Primitive/TriMesh.h>
 
 #include <Eigen/Sparse>
+#include <Eigen/SparseQR>
 
 using namespace Ubpa;
 
@@ -87,7 +88,95 @@ bool MinSurf::Run() {
 }
 
 void MinSurf::Minimize() {
-	// TODO
-	cout << "WARNING::MinSurf::Minimize:" << endl
-		<< "\t" << "not implemented" << endl;
+	// First, detect and fix boundary
+	random_set<V*> boundary_points;
+	random_set<V*> inner_points;
+
+	auto boundaries = this->heMesh->Boundaries();
+	if (boundaries.size() != 1) {
+		cout << "ERROR::MinSurf::Minimize:" << endl
+			 << "\t" << "got boundaries = " << boundaries.size()
+			 << " (expect 1)" << endl;
+		return;
+	}
+
+	for (auto v: boundaries[0]) {
+		boundary_points.insert(v->Origin());
+	}
+
+	for (auto v: heMesh->Vertices()) {
+		if (!boundary_points.contains(v)) {
+			inner_points.insert(v);
+		}
+	}
+	// Build sparse matrix
+	size_t n = inner_points.size();
+	SparseMatrix<float> coeff_mat(n, n);
+	coeff_mat.setZero();
+	VectorXf b_vec_x = VectorXf::Zero(n);
+	VectorXf b_vec_y = VectorXf::Zero(n);
+	VectorXf b_vec_z = VectorXf::Zero(n);
+
+	cout << "coeff mat build start" << endl;
+
+	int current_row = 0;
+	for (auto v: inner_points) {
+		// vidx CERTAINLY follows order (and it's redundant)
+		size_t vidx = inner_points.idx(v);
+		auto adj = v->AdjVertices();
+		size_t degree = v->Degree();
+		for (auto adjv : adj) {
+			// check type
+			if (boundary_points.contains(adjv)) { // this set is usually smaller
+				b_vec_x(current_row) += (1.0f / degree) * adjv->pos[0];
+				b_vec_y(current_row) += (1.0f / degree) * adjv->pos[1];
+				b_vec_z(current_row) += (1.0f / degree) * adjv->pos[2];
+			} else { // inner
+				assert(inner_points.contains(adjv));
+				size_t adjidx = inner_points.idx(adjv);
+				// todo add assert = 0
+				coeff_mat.insert(current_row, adjidx) = - 1.0f / degree;
+			}
+		}
+
+		// add itself
+		// todo add assert
+		coeff_mat.insert(current_row, vidx) = 1;
+		current_row++;
+	}
+
+	cout << "coeff mat build complete" << endl;
+
+	// Solve
+	SparseQR<SparseMatrix<float>, COLAMDOrdering<int>> solver;
+
+	cout << "begin makeCompressed()" << endl;
+	coeff_mat.makeCompressed();
+
+	cout << "begin compute()" << endl;
+	solver.compute(coeff_mat);
+	if (solver.info() != Eigen::Success) {
+		cout << "solver: decomposition was not successfull." << endl;
+		return;
+	}
+
+	cout << "begin solve() for x" << endl;
+	VectorXf res_x = solver.solve(b_vec_x);
+
+	cout << "begin solve() for y" << endl;
+	VectorXf res_y = solver.solve(b_vec_y);
+
+	cout << "begin solve() for z" << endl;
+	VectorXf res_z = solver.solve(b_vec_z);
+
+	// Update vertex coordinates
+	for (int i = 0; i < n; i++) {
+		// find the corresponding point
+		auto v = inner_points[i];
+		vecf3 new_pos = { res_x(i), res_y(i), res_z(i) }; // works?
+
+		//cout << new_pos << endl;
+		v->pos = new_pos;
+	}
+
 }
