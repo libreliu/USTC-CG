@@ -6,6 +6,8 @@
 #include <Engine/MeshEdit/MinSurf.h>
 #include <Engine/MeshEdit/Paramaterize.h>
 #include <Engine/MeshEdit/IsotropicRemeshing.h>
+#include <Engine/MeshEdit/ShortestPath.h>
+#include <Engine/MeshEdit/MST.h>
 
 #include <Engine/Scene/SObj.h>
 #include <Engine/Scene/AllComponents.h>
@@ -33,7 +35,7 @@
 #include <Basic/Math.h>
 #include <Basic/EventManager.h>
 
-#include <UDP/MultiVisitor.h>
+#include <UDP/Visitor/MultiVisitor.h>
 
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QDoubleSpinBox>
@@ -55,6 +57,8 @@ class Attribute::ComponentVisitor : public HeapObj,
 		Component, Light, Primitive, Material>
 {
 public:
+	Ptr<SObj> sobj;
+
 	ComponentVisitor(Attribute * attr) : attr(attr) {
 		Regist<CmptCamera,
 			CmptGeometry,
@@ -383,6 +387,16 @@ void Attribute::ComponentVisitor::ImplVisit(Ptr<TriMesh> mesh) {
 			printf("[Isotropic Remeshing] fail\n");
 		pOGLW->DirtyVAO(mesh);
 	});
+
+	grid->AddButton("Shortest Path", [this]() {
+		auto sp = ShortestPath::New(sobj);
+		sp->Run();
+		});
+
+	grid->AddButton("MST", [this]() {
+		auto mst = MST::New(sobj);
+		mst->Run();
+		});
 }
 
 void Attribute::ComponentVisitor::ImplVisit(Ptr<Capsule> capsule) {
@@ -821,6 +835,7 @@ void Attribute::SetSObj(Ptr<SObj> sobj) {
 	if (sobj == nullptr)
 		return;
 
+	visitor->sobj = sobj;
 	for (auto component : sobj->GetAllComponents())
 		visitor->Visit(component);
 
