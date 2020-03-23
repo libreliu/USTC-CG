@@ -4,18 +4,18 @@
 #include "basic.h"
 #include "../Math/quat.h"
 
-// ------------------------------ ÅäÖÃ ------------------------------
+// ------------------------------ é…ç½® ------------------------------
 
 uniform float gTime = 1;
 
-// ------------------------------ ½Ó¿Ú ------------------------------
+// ------------------------------ æ¥å£ ------------------------------
 
 void SampleInit(vec2 uv);
 
-// [0, 1)£¬Î±Ëæ»úÊı£¬Ã¿´Î½á¹û¹Ì¶¨£¬Ïàµ±ÓÚËæ»úµÄÓ³Éäº¯Êı
+// [0, 1)ï¼Œä¼ªéšæœºæ•°ï¼Œæ¯æ¬¡ç»“æœå›ºå®šï¼Œç›¸å½“äºéšæœºçš„æ˜ å°„å‡½æ•°
 float PRNG(vec2 uv);
 
-// [0, 1)£¬Ã¿´Îµ÷ÓÃ½á¹û¶¼²»Í¬£¬ÇÒÓëÊ±¼äÓĞ¹Ø
+// [0, 1)ï¼Œæ¯æ¬¡è°ƒç”¨ç»“æœéƒ½ä¸åŒï¼Œä¸”ä¸æ—¶é—´æœ‰å…³
 float Rand(vec2 uv);
 
 // [0, 1) x [0, 1)
@@ -44,7 +44,7 @@ vec3 CosOnHalfSphere(vec3 N);
 // low discrepancy 2D random number, [0, 1) x [0, 1)
 vec2 Hammersley(uint i, uint N);
 
-// ------------------------------ ÊµÏÖ ------------------------------
+// ------------------------------ å®ç° ------------------------------
 
 vec2 _uv = vec2(0);
 void SampleInit(vec2 uv) {
@@ -57,7 +57,8 @@ float PRNG() {
 
 float _Rand_Last = 0;
 float Rand() {
-	_Rand_Last = PRNG(_uv + vec2(_Rand_Last + gTime, _Rand_Last * gTime));
+	//_Rand_Last = PRNG(_uv + vec2(_Rand_Last + gTime, _Rand_Last * gTime));
+	_Rand_Last = _Rand_Last * _Rand_Last + _Rand_Last + 233;
 	return _Rand_Last;
 }
 

@@ -22,6 +22,9 @@ Shader::Shader() : valid(false){ }
 
 Shader::Shader(const string & vertexPath, const string & fragmentPath, const string & geometryPath) {
 	valid = true;
+
+	// Zitan Debug
+	cout << "Initializing shaders:\n- vPath: " << vertexPath << "\n- fPath: " << fragmentPath << "\n- gPath: " << geometryPath << endl;
 	File vsF(vertexPath, File::Mode::READ);
 	File fsF(fragmentPath, File::Mode::READ);
 	bool hasGS = geometryPath.size() > 0;

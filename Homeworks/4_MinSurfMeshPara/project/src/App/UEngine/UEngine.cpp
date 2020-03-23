@@ -58,7 +58,8 @@ UEngine::UEngine(QWidget *parent)
 	scene = GenScene(11);
 
 	// viewer
-	viewer = Viewer::New(ui.OGLW_Raster, scene, Viewer::RasterType::DeferredPipeline);
+	//viewer = Viewer::New(ui.OGLW_Raster, scene, Viewer::RasterType::DeferredPipeline);
+	viewer = Viewer::New(ui.OGLW_Raster, scene, Viewer::RasterType::WireframeRaster);
 
 	// raytracer
 	PaintImgOpCreator pioc(ui.OGLW_RayTracer);
@@ -187,5 +188,6 @@ void UEngine::InitSetting() {
 	Grid::pSlotMap slotmap = std::make_shared<Grid::SlotMap>();
 	(*slotmap)["Deferred"] = [this]() {viewer->SetRaster(Viewer::RasterType::DeferredPipeline); };
 	(*slotmap)["Wireframe"] = [this]() {viewer->SetRaster(Viewer::RasterType::WireframeRaster); };
-	setting->AddComboBox("Raster Type", "Deferred", slotmap);
+	//setting->AddComboBox("Raster Type", "Deferred", slotmap);
+	setting->AddComboBox("Raster Type", "Wireframe", slotmap);
 }
