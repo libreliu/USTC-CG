@@ -1,0 +1,426 @@
+WARNING::InfiniteAreaLight:
+        not implemented
+qt.qpa.gl: Unable to disable rotation.
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/PointLight/genDepth.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/PointLight/genDepth.fs
+- gPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/PointLight/genDepth.gs
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/MVP_P3.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/empty.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/MVP_P3.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/empty.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/cubemap.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/equirectangular_to_cubemap.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/cubemap.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/irradiance_convolution.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/cubemap.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/prefilter.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/basic_P2T2.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/IBL/brdf.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/basic_P3.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project//data/sh
+aders/Common/basic.fs
+- gPath:
+Initializing shaders:
+- vPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/Skybox/skybox.vs
+- fPath: C:/Projects/GitHub/USTC-CG/Homeworks/4_MinSurfMeshPara/project/data/sha
+ders/Engine/Skybox/skybox.fs
+- gPath:
+WARNING::Picker::Init:
+        not implemented
+DoARAP() called.
+P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 0)]
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+-1
+ 0
+* energy += 0.000000
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+     0.5
+-1.11803
+* energy += 0.170820
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+    0.5
+1.11803
+* energy += 0.170820
+P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 0)]
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+-1
+ 0
+* energy += 1.788854
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+     0.5
+-1.11803
+* energy += 1.170820
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+    0.5
+1.11803
+* energy += 0.618034
+P: [V: (0.5, 0.5, 0), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+-1.22474
+       0
+* energy += 0.346705
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+ 0.408248
+-0.912871
+* energy += 1.058558
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+0.816497
+0.912871
+* energy += 0.851327
+P: [V: (0, 0, 0), V: (0.5, 0.5, 0), V: (0, 1, 0)]
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+-1.22474
+       0
+* energy += 0.346705
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+ 0.816497
+-0.912871
+* energy += 0.121031
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+0.408248
+0.912871
+* energy += 0.155861
+Start with energy=3.399768
+P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 0)]
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+-1
+ 0
+* energy += 0.000000
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+     0.5
+-1.11803
+* energy += 0.170820
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+    0.5
+1.11803
+* energy += 0.170820
+P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 0)]
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+-1
+ 0
+* energy += 0.000000
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+     0.5
+-1.11803
+* energy += 0.170820
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+    0.5
+1.11803
+* energy += 0.170820
+P: [V: (0.5, 0.5, 0), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+-1.22474
+       0
+* energy += 0.170820
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+ 0.408248
+-0.912871
+* energy += 0.000000
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+0.816497
+0.912871
+* energy += 0.170820
+P: [V: (0, 0, 0), V: (0.5, 0.5, 0), V: (0, 1, 0)]
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+-1.22474
+       0
+* energy += 0.170820
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+ 0.816497
+-0.912871
+* energy += 0.170820
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+0.408248
+0.912871
+* energy += 0.000000
+[] local iteration done, energy=0.683281
+* i: V: (1, 0, 0)
+* j: V: (0, 0, 0)
+- tri_ij: P: nullptr
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.000000 , ctg_ji=0.894427
+* i: V: (1, 0, 0)
+* j: V: (0.5, 0.5, 0)
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+* i: V: (1, 0, 0)
+* j: V: (1, 1, 0)
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.894427 , ctg_ji=0.000000
+* i: V: (1, 1, 0)
+* j: V: (1, 0, 0)
+- tri_ij: P: nullptr
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.000000 , ctg_ji=0.894427
+* i: V: (1, 1, 0)
+* j: V: (0.5, 0.5, 0)
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+* i: V: (1, 1, 0)
+* j: V: (0, 1, 0)
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+* ctg_ij=0.894427 , ctg_ji=0.000000
+* i: V: (0, 1, 0)
+* j: V: (1, 1, 0)
+- tri_ij: P: nullptr
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+* ctg_ij=0.000000 , ctg_ji=0.894427
+* i: V: (0, 1, 0)
+* j: V: (0.5, 0.5, 0)
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+* i: V: (0, 1, 0)
+* j: V: (0, 0, 0)
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+* ctg_ij=0.894427 , ctg_ji=0.000000
+* i: V: (0.5, 0.5, 0)
+* j: V: (1, 0, 0)
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+* i: V: (0.5, 0.5, 0)
+* j: V: (0, 0, 0)
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+* i: V: (0.5, 0.5, 0)
+* j: V: (0, 1, 0)
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+* i: V: (0.5, 0.5, 0)
+* j: V: (1, 1, 0)
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+* ctg_ij=0.447214 , ctg_ji=0.447214
+begin makeCompressed()
+begin compute()
+error: 3.38396e-13 (x_res)
+error: 1.44329e-14 (y_res)
+P: [V: (0, 0, 0), V: (1.03143, 0.345756, 0), V: (0.978113, 0.653388, 0)]
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+-1
+ 0
+* energy += 0.107810
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+     0.5
+-1.11803
+* energy += 0.382939
+- tri_ij: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+    0.5
+1.11803
+* energy += 0.198781
+P: [V: (1.03143, 0.345756, 0), V: (1.30716, 0.692896, 0), V: (0.978113, 0.653388
+, 0)]
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+-1
+ 0
+* energy += 0.449227
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+     0.5
+-1.11803
+* energy += 0.373227
+- tri_ij: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed: P: [V: (0, 0), V: (1, 0), V: (0.5, 1.11803)]
+    0.5
+1.11803
+* energy += 0.523522
+P: [V: (0.978113, 0.653388, 0), V: (1.30716, 0.692896, 0), V: (0.740536, 0.82954
+5, 0)]
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (1, 0, 0), V: (1, 1, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+-1.22474
+       0
+* energy += 0.533277
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+ 0.408248
+-0.912871
+* energy += 0.184691
+- tri_ij: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed_input: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.816497, 0.912871)]
+0.816497
+0.912871
+* energy += 0.427535
+P: [V: (0, 0, 0), V: (0.978113, 0.653388, 0), V: (0.740536, 0.829545, 0)]
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0, 0, 0), V: (1, 0, 0), V: (0.5, 0.5, 1)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+-1.22474
+       0
+* energy += 0.019277
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: [V: (0.5, 0.5, 1), V: (1, 1, 0), V: (0, 1, 0)]
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+ 0.816497
+-0.912871
+* energy += 0.393583
+- tri_ij: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- tri_ji: P: nullptr
+- embed_input: P: [V: (0, 0, 0), V: (0.5, 0.5, 1), V: (0, 1, 0)]
+- embed: P: [V: (0, 0), V: (1.22474, 0), V: (0.408248, 0.912871)]
+0.408248
+0.912871
+* energy += 0.516485
+[] global iteration done, energy=2.055178
+Paramaterize done

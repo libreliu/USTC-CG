@@ -67,8 +67,10 @@ Ptr<SObj> SimpleLoader::LoadObj(const string& path) {
 		box.combine_with(pos);
 	auto center = box.center();
 	float scale = sqrt(3.f / box.diagonal().norm2());
-	for (auto& pos : positions)
-		pos = (scale * (pos - center)).cast_to<pointf3>();
+
+	// LZT COMMENTED
+	//for (auto& pos : positions)
+	//	pos = (scale * (pos - center)).cast_to<pointf3>();
 
 	auto tmp = StrAPI::Replace(path, "\\", "/");
 	auto sobj = SObj::New(nullptr, StrAPI::Split(tmp, '/').back());

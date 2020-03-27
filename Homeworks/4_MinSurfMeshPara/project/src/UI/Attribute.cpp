@@ -8,6 +8,7 @@
 #include <Engine/MeshEdit/IsotropicRemeshing.h>
 #include <Engine/MeshEdit/ShortestPath.h>
 #include <Engine/MeshEdit/MST.h>
+#include <Engine/MeshEdit/ARAP.h>
 
 #include <Engine/Scene/SObj.h>
 #include <Engine/Scene/AllComponents.h>
@@ -401,6 +402,22 @@ void Attribute::ComponentVisitor::ImplVisit(Ptr<TriMesh> mesh) {
 			printf("[Isotropic Remeshing] success\n");
 		else
 			printf("[Isotropic Remeshing] fail\n");
+		pOGLW->DirtyVAO(mesh);
+	});
+
+	static int p_iter_n;
+	p_iter_n = 5;
+	grid->AddEditVal("ARAP Iter Num", p_iter_n, 1, 100, 99);
+
+	static int log_verbosity;
+	log_verbosity = 50;
+	grid->AddEditVal("Log Verbosity", log_verbosity, 1, 100, 99);
+
+	grid->AddButton("Para (ARAP)", [mesh, iter_n_addr = &p_iter_n, log_v_addr = &log_verbosity, pOGLW = attr->pOGLW]() {
+		printf("Called with iter_n=%d, verbosity=%d\n", *iter_n_addr, *log_v_addr);
+		auto paramaterize = ARAP::New(mesh, *iter_n_addr, *log_v_addr);
+		if (paramaterize->Run())
+			printf("ARAP done\n");
 		pOGLW->DirtyVAO(mesh);
 	});
 
