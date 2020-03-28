@@ -53,9 +53,11 @@ local 阶段的大概步骤是这样的：
 
 2. 计算这个三角形到现在的三角形之间的最优变换矩阵
 
-   这个矩阵可以用 SVD 分解求出来，因为 SVD 求出来的其实是“最大的主成分”，证明见下：
+   这个矩阵可以用 SVD 分解求出来，因为 SVD 是将一个矩阵分解为 rotation * scale * rotation 的三个矩阵，且有性质保证各个奇异值相对应的  $rank\ k $ 近似在 $ F $ 范数上是最优的。
 
+   > 证明可以参见 Mathematical Foundations For Data Analysis P134
    
+   所以我们只要强行让 scale 矩阵 = I 就可以得到新的 L_t 的值。（这从 rank k 的结论过来也需要一点证明，不过大体相同）
 
 #### global 阶段
 
@@ -166,9 +168,9 @@ local 阶段的大概步骤是这样的：
    ARAP done
    ```
 
-
-
 ## Extra
 
 ### 关于 Jacobian 的推导
+
+> TBC
 
