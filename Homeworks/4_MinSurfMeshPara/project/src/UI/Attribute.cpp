@@ -192,6 +192,24 @@ void Attribute::ComponentVisitor::ImplVisit(Ptr<CmptSimulate> simulate) {
 	grid->AddEditVal({ "stiff" }, simulate->GetStiff(), 0.1f, [=](const float& val) {
 		simulate->SetStiff(val);
 		});
+
+	grid->AddEditVal({ "ext force (Y)" }, simulate->GetExtForce(), 0.1f, [=](const float& val) {
+		simulate->SetExtForce(val);
+		});
+
+	static int boundary_radius;
+	boundary_radius = 50;
+	grid->AddEditVal("boundary_radius", boundary_radius, 1, 100, 99);
+
+	static int log_verbosity;
+	log_verbosity = 5;
+	grid->AddEditVal("Log Verbosity", boundary_radius, 1, 100, 99);
+
+	grid->AddButton("update param", [simulate, addr_br = &boundary_radius, addr_lv = &log_verbosity]() {
+		simulate->SetParam("boundary-radius", *addr_br);
+		simulate->SetParam("log-verbosity", *addr_lv);
+		});
+
 	grid->AddButton("set x min fix", [simulate]() {
 		simulate->SetLeftFix();
 		});
