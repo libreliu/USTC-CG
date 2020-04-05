@@ -59,11 +59,14 @@ struct Particle {
   // Color
   int c;
 
-  Particle(Vec x, int c, Vec v=Vec(0)) :
+  int ptype;
+
+  Particle(Vec x, int c, int ptype, Vec v=Vec(0)) :
     x(x),
     v(v),
     F(1),
     C(0),
+    ptype(ptype),
     Jp(1),
     c(c) {}
 };
@@ -93,8 +96,8 @@ void advance(real dt) {
 
     // Compute current Lamé parameters [http://mpm.graphics Eqn. 86]
     auto e = std::exp(hardening * (1.0f - p.Jp));
-    auto mu = mu_0 * e;
-    auto lambda = lambda_0 * e;
+    auto mu = (p.ptype == 0) ? 0 : (mu_0 * e);
+    auto lambda =  lambda_0 * e;
 
     // Current volume
     real J = determinant(p.F);
@@ -205,21 +208,28 @@ void advance(real dt) {
     // MLS-MPM F-update
     auto F = (Mat(1) + dt * p.C) * p.F;
 
-    Mat svd_u, sig, svd_v;
-    svd(F, svd_u, sig, svd_v);
+    if (p.ptype == 0) {
+        p.F = Mat(1) * sqrt(determinant(F));
+    }
+    else {
+        Mat svd_u, sig, svd_v;
+        svd(F, svd_u, sig, svd_v);
 
-    // Snow Plasticity
-    for (int i = 0; i < 2 * int(plastic); i++) {
-      sig[i][i] = taichi::clamp(sig[i][i], 1.0f - 2.5e-2f, 1.0f + 7.5e-3f);
+        // Snow Plasticity
+        for (int i = 0; i < 2 * int(plastic); i++) {
+            sig[i][i] = taichi::clamp(sig[i][i], 1.0f - 2.5e-2f, 1.0f + 7.5e-3f);
+        }
+
+        real oldJ = determinant(F);
+        F = svd_u * sig * transposed(svd_v);
+
+        real Jp_new = taichi::clamp(p.Jp * oldJ / determinant(F), 0.6f, 20.0f);
+
+        p.Jp = Jp_new;
+        p.F = F;
     }
 
-    real oldJ = determinant(F);
-    F = svd_u * sig * transposed(svd_v);
 
-    real Jp_new = taichi::clamp(p.Jp * oldJ / determinant(F), 0.6f, 20.0f);
-
-    p.Jp = Jp_new;
-    p.F = F;
   }
 }
 
@@ -239,7 +249,7 @@ void add_object(Vec center, int c) {
   // Randomly sample 1000 particles in the square
   for (int i = 0; i < 8000; i++) {
     //particles.push_back(Particle((Vec::rand()*2.0f-Vec(1))*0.08f + center, c));
-    particles.push_back(Particle(gen_round()*0.05f + center, c));
+    particles.push_back(Particle(gen_round()*0.05f + center, c, 2));
   }
 }
 
@@ -250,15 +260,15 @@ void add_object_rectangle(Vec v1, Vec v2, int c, int num = 500, Vec velocity = V
 	while (i < num) {
 		auto pos = Vec::rand();
 		if (pos.x > box_min.x&&pos.y > box_min.y&&pos.x < box_max.x&&pos.y < box_max.y) {
-			particles.push_back(Particle(pos, c, velocity));
+			particles.push_back(Particle(pos, c, 0, velocity));
 			i++;
 		}
 	}
 }
 
 void add_jet() {
-	add_object_rectangle(Vec(0.05, 0.8), Vec(0.06, 0.81), 0x87CEFA, 100, Vec(9.0, 0.0));
-	//add_object_rectangle(Vec(0.5, 0.5), Vec(0.51, 0.51), 0x87CEFA, 10, Vec(0.0, -10.0));
+	//add_object_rectangle(Vec(0.05, 0.8), Vec(0.06, 0.81), 0x87CEFA, 100, Vec(9.0, 0.0));
+	add_object_rectangle(Vec(0.05, 0.8), Vec(0.06, 0.81), 0x87CEFA, 50, Vec(9.0, 0.0));
 }
 
 int main() {
@@ -266,8 +276,8 @@ int main() {
   auto &canvas = gui.get_canvas();
 
   add_object(Vec(0.55,0.45), 0xED553B);
-  add_object(Vec(0.45,0.65), 0xF2B134);
-  add_object(Vec(0.55,0.85), 0x068587);
+  //add_object(Vec(0.45,0.65), 0xF2B134);
+  //add_object(Vec(0.55,0.85), 0x068587);
 
   int frame = 0;
 
@@ -299,7 +309,7 @@ int main() {
       gui.update();
 
       // Write to disk (optional)
-      canvas.img.write_as_image(fmt::format("/tmp/screenrec/{:05d}.png", frame++));
+      //canvas.img.write_as_image(fmt::format("/tmp/screenrec/{:05d}.png", frame++));
 
       if (step < 5e4)
         add_jet();

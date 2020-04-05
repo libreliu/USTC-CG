@@ -28,7 +28,7 @@ void advance(real dt) {
 	auto e = std::exp(hardening * (1.0_f - p.Jp));
 	if (p.ptype == 1) e = 0.3;
 	auto mu = mu_0 * e, lambda = lambda_0 * e;
-	if (p.ptype == 0) mu = 0;
+    if (p.ptype == 0) mu = 0;
 ////////////////////////////////////////////////////////////////////////////////
     real J = determinant(p.F);         //                         Current volume
     Mat r, s; polar_decomp(p.F, r, s); //Polar decomp. for fixed corotated model
@@ -68,7 +68,10 @@ void advance(real dt) {
     p.x += dt * p.v;                                                // Advection
     auto F = (Mat(1) + dt * p.C) * p.F;                      // MLS-MPM F-update
 /***********************************(3)*****************************************/
-	if (p.ptype == 0) { p.F = Mat(1) * sqrt(determinant(F)); }
+	if (p.ptype == 0) { 
+        p.F = Mat(1) * sqrt(determinant(F)); 
+        //p.F = Mat(1);
+    }
 	else if (p.ptype == 1) { p.F = F; }
 	else if (p.ptype == 2) {
 		Mat svd_u, sig, svd_v; svd(F, svd_u, sig, svd_v);
