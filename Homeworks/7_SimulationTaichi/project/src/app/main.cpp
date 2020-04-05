@@ -16,9 +16,11 @@ using Mat = Matrix2;
 const int window_size = 800;
 
 // Grid resolution (cells)
-const int n = 80;
+//const int n = 80;
+const int n = 320;
 
-const real dt = 1e-4_f;
+//const real dt = 1e-4_f;
+const real dt = 1e-5_f;
 const real frame_dt = 1e-3_f;
 const real dx = 1.0_f / n;
 const real inv_dx = 1.0_f / dx;
@@ -27,13 +29,23 @@ const real inv_dx = 1.0_f / dx;
 const auto particle_mass = 1.0_f;
 const auto vol = 1.0_f;        // Particle Volume
 const auto hardening = 10.0_f; // Snow hardening factor
-const auto E = 1e4_f;          // Young's Modulus
-const auto nu = 0.2_f;         // Poisson ratio
+//const auto hardening = 0.1_f; // Snow hardening factor
+//const auto E = 1e4_f;          // Young's Modulus
+const auto E = 2e4_f;          // Young's Modulus
+//const auto nu = 0.2_f;         // Poisson ratio
+const auto nu = 0.1_f;         // Poisson ratio
 const bool plastic = true;
 
 // Initial Lamé parameters
 const real mu_0 = E / (2 * (1 + nu));
 const real lambda_0 = E * nu / ((1+nu) * (1 - 2 * nu));
+
+// add a separate boundary
+Vector2 rotator_center(
+  std::array<taichi::real, 2>{0.5, 0.5}
+);
+
+const real rotator_radius = 0.1f; 
 
 struct Particle {
   // Position and velocity
@@ -128,11 +140,25 @@ void advance(real dt) {
         // Gravity
         g += dt * Vector3(0, -200, 0);
 
-        // boundary thickness
-        real boundary = 0.05;
         // Node coordinates
         real x = (real) i / n;
         real y = real(j) / n;
+
+        Vector2 pos_vec (std::array<taichi::real, 2>{x, y});
+        if (pow<2>(x - rotator_center[0]) + pow<2>(y - rotator_center[1]) <= pow<2>(rotator_radius)) {
+          // calculate normal vector
+          Vector2 normal_vec = normalize(pos_vec - rotator_center);
+          if (!isfinite(normal_vec[0]) || !isfinite(normal_vec[1])) {
+            normal_vec[0] = 0.5;
+            normal_vec[1] = 0.5;
+          }
+          //printf("Normalized: %lf, %lf\n", normal_vec[0], normal_vec[1]);
+
+          g += dt * Vector3(normal_vec[0], normal_vec[1], 0) * 1000.0f;
+        }
+
+        // boundary thickness
+        real boundary = 0.05;
 
         // Sticky boundary
         if (x < boundary || x > 1-boundary || y > 1-boundary) {
@@ -142,6 +168,7 @@ void advance(real dt) {
         if (y < boundary) {
           g[1] = std::max(0.0f, g[1]);
         }
+
       }
     }
   }
@@ -183,25 +210,55 @@ void advance(real dt) {
 
     // Snow Plasticity
     for (int i = 0; i < 2 * int(plastic); i++) {
-      sig[i][i] = clamp(sig[i][i], 1.0f - 2.5e-2f, 1.0f + 7.5e-3f);
+      sig[i][i] = taichi::clamp(sig[i][i], 1.0f - 2.5e-2f, 1.0f + 7.5e-3f);
     }
 
     real oldJ = determinant(F);
     F = svd_u * sig * transposed(svd_v);
 
-    real Jp_new = clamp(p.Jp * oldJ / determinant(F), 0.6f, 20.0f);
+    real Jp_new = taichi::clamp(p.Jp * oldJ / determinant(F), 0.6f, 20.0f);
 
     p.Jp = Jp_new;
     p.F = F;
   }
 }
 
+// x = ncos(m)
+// y = nsin(m)
+Vec gen_round() {
+  auto r = taichi::rand();
+  auto theta = taichi::rand() * 2 * 3.14;
+  return Vector2(std::array<taichi::real, 2>{
+      (real)(std::sqrt(r) * std::cos(theta))
+    , (real)(std::sqrt(r) * std::sin(theta))});
+  
+}
+
 // Seed particles with position and color
 void add_object(Vec center, int c) {
   // Randomly sample 1000 particles in the square
-  for (int i = 0; i < 1000; i++) {
-    particles.push_back(Particle((Vec::rand()*2.0f-Vec(1))*0.08f + center, c));
+  for (int i = 0; i < 8000; i++) {
+    //particles.push_back(Particle((Vec::rand()*2.0f-Vec(1))*0.08f + center, c));
+    particles.push_back(Particle(gen_round()*0.05f + center, c));
   }
+}
+
+void add_object_rectangle(Vec v1, Vec v2, int c, int num = 500, Vec velocity = Vec(0.0_f))
+{
+	Vec box_min(min(v1.x, v2.x), min(v1.y, v2.y)), box_max(max(v1.x, v2.x), max(v1.y, v2.y));
+	int i = 0;
+	while (i < num) {
+		auto pos = Vec::rand();
+		if (pos.x > box_min.x&&pos.y > box_min.y&&pos.x < box_max.x&&pos.y < box_max.y) {
+			particles.push_back(Particle(pos, c, velocity));
+			i++;
+		}
+	}
+}
+
+void add_jet() {
+	add_object_rectangle(Vec(0.05, 0.8), Vec(0.06, 0.81), 0x87CEFA, 100, Vec(9.0, 0.0));
+	//add_object_rectangle(Vec(0.5, 0.5), Vec(0.51, 0.51), 0x87CEFA, 10, Vec(0.0, -10.0));
 }
 
 int main() {
@@ -225,6 +282,15 @@ int main() {
       canvas.clear(0x112F41);
       // Box
       canvas.rect(Vec(0.04), Vec(0.96)).radius(2).color(0x4FB99F).close();
+
+      for (double i = 0; i < 2 * taichi::pi; i += 0.01) {
+        canvas.circle(rotator_center + Vec(rotator_radius * cos(i), rotator_radius * sin(i)))
+          .radius(2).color(0x4FB99F);
+      }
+
+      // rotator center
+      canvas.circle(rotator_center).radius(2).color(0x4FB99F);
+
       // Particles
       for (auto p : particles) {
         canvas.circle(p.x).radius(2).color(p.c);
@@ -233,8 +299,12 @@ int main() {
       gui.update();
 
       // Write to disk (optional)
-      // canvas.img.write_as_image(fmt::format("tmp/{:05d}.png", frame++));
+      canvas.img.write_as_image(fmt::format("/tmp/screenrec/{:05d}.png", frame++));
+
+      if (step < 5e4)
+        add_jet();
     }
+
   }
 }
 
