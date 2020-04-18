@@ -158,7 +158,8 @@ float Fwin(float d, float radius);
 
 vec3 BRDF(vec3 norm, vec3 wo, vec3 wi, vec3 albedo, float metallic, float roughness, float ao);
 
-float PointLightVisibility(vec3 lightToFrag, int id);
+float 
+(vec3 lightToFrag, int id);
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap);
 
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id);
@@ -400,7 +401,7 @@ float PointLightVisibility(vec3 lightToFrag, int id){
 	} else if(id == 7) {
 		return PointLightVisibility(lightToFrag, pointLightDepthMap7);
 	}else 
-		return 1;// not support id
+		return 1.0;// not support id
 }
 
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
@@ -436,7 +437,7 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id){
 	} else if(id == 7) {
 		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap7);
 	}else
-		return 1;// not support id
+		return 1.0;// not support id
 }
 
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
@@ -473,7 +474,7 @@ float SpotLightVisibility(vec3 normPos, float cosTheta, int id){
 	} else if(id == 7) {
 		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap7);
 	}else
-		return 1;// not support id
+		return 1.0;// not support id
 }
 
 float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){

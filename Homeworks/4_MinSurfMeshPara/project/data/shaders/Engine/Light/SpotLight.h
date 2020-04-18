@@ -22,8 +22,8 @@ vec3 SpotLight_Illuminance(SpotLight light, vec3 pos);
 
 float _SpotLight_DirFalloff(SpotLight light, vec3 wi) {
 	float cosTheta = -dot(wi, light.dir);
-	if (cosTheta < light.cosHalfAngle) return 0;
-	if (cosTheta > light.cosFalloffAngle) return 1;
+	if (cosTheta < light.cosHalfAngle) return 0.0;
+	if (cosTheta > light.cosFalloffAngle) return 1.0;
 
 	float t = (cosTheta - light.cosHalfAngle) /
 		(light.cosHalfAngle - light.cosFalloffAngle);

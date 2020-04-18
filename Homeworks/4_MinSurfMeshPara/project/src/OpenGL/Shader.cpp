@@ -89,10 +89,11 @@ Shader::Shader(const string & vertexPath, const string & fragmentPath, const str
 	glLinkProgram(ID);
 	if (!CheckCompileErrors(ID, CompileType::PROGRAM)) {
 		if(hasGS)
-			cout << vertexPath << ", " << fragmentPath << " and " << geometryPath << " link failed.\n";
+			cout << "(ID: " << ID << ") " << vertexPath << ", " << fragmentPath << " and " << geometryPath << " link failed.\n";
 		else
-			cout << vertexPath << " and " << fragmentPath << " link failed.\n";
+			cout << "(ID: " << ID << ") " << vertexPath << " and " << fragmentPath << " link failed.\n";
 		valid = false;
+		
 		return;
 	}
 	// delete the shaders as they're linked into our program now and no longer necessary

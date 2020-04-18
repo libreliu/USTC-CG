@@ -269,7 +269,7 @@ float PointLightVisibility(vec3 lightToFrag, int id){
 	} else if(id == 7) {
 		return PointLightVisibility(lightToFrag, pointLightDepthMap7);
 	}else 
-		return 1;// not support id
+		return 1.0;// not support id
 }
 
 float PointLightVisibility(vec3 lightToFrag, samplerCube depthMap) {
@@ -305,7 +305,7 @@ float DirectionalLightVisibility(vec3 normPos, float cosTheta, int id){
 	} else if(id == 7) {
 		return DirectionalLightVisibility(normPos, cosTheta, directionalLightDepthMap7);
 	}else
-		return 1;// not support id
+		return 1.0;// not support id
 }
 
 float DirectionalLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
@@ -342,7 +342,7 @@ float SpotLightVisibility(vec3 normPos, float cosTheta, int id){
 	} else if(id == 7) {
 		return SpotLightVisibility(normPos, cosTheta, spotLightDepthMap7);
 	}else
-		return 1;// not support id
+		return 1.0;// not support id
 }
 
 float SpotLightVisibility(vec3 normPos, float cosTheta, sampler2D depthMap){
