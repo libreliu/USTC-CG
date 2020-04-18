@@ -7,11 +7,22 @@ _deps/
 
 *Config.h
 
+<<<<<<< HEAD
 #*.bmp
 #*.png
 #*.jpg
 #*.gif
 #*.mp4
+=======
+*.obj
+*.uscene
+
+*.bmp
+*.png
+*.jpg
+*.gif
+*.mp4
+>>>>>>> bd9959899093453577e9a5529615c7fda57c7e37
 *.pdf
 
 *.html
