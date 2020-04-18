@@ -82,7 +82,7 @@ $$
 \boldsymbol x ^ {(k+1)} = [\boldsymbol x^{(k+1)}_{(0)}, \dots , \boldsymbol x^{(k+1)}_{(n)} ] ^ \bold T =  [(\boldsymbol x^{(k+1)}_{(0)})_0, \dots , (\boldsymbol x^{(k+1)}_{(n)})_2 ] ^ \bold T \\
 
 \boldsymbol g(\boldsymbol x^{(k)}) = [\boldsymbol g(\boldsymbol x^{(k)}_{(0)}), \dots, \boldsymbol g(\boldsymbol x^{(k)}_{(n)})] ^ \bold T = [(\boldsymbol g(\boldsymbol x^{(k)}_{(0)}))_0, \dots, (\boldsymbol g(\boldsymbol x^{(k)}_{(n)}))_2] ^ \bold T \\
-
+
 $$
 迭代到 $ (1) $ 式的误差足够小后，更新所有位移和速度。
 
@@ -106,6 +106,9 @@ $$
 ## 实现
 
 - 给定“边界”在里面到处乱撞的模式
+
+  > 好，限于时间这个也没有做。。
+
 - ~~还有没有边界到处乱飞的模式~~
 
 ### 效果
