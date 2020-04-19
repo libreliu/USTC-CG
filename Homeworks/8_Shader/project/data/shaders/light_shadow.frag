@@ -12,6 +12,9 @@ uniform bool have_shadow;
 // TODO: HW8 - 2_Shadow | uniforms
 // add uniforms for mapping position in world space to position in shadowmap space
 
+// lightSpaceMatrix = projection * view
+uniform mat4 lightSpaceMatrix;
+
 uniform vec3 ambient_irradiance;
 uniform sampler2D albedo_texture;
 uniform float roughness;
@@ -54,6 +57,19 @@ float GGX_D(float alpha, vec3 N, vec3 H) {
 	return step(cos_stheta, 0) * alpha2 / denominator;
 }
 
+float ShadowCalculation(vec4 fragPosLightSpace) {
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+	// NDC [-1, 1] -> [0, 1] (Texture)
+	projCoords = projCoords * 0.5 + 0.5;
+
+	float closestDepth = texture(shadowmap, projCoords.xy).r;
+	float currentDepth = projCoords.z;
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 void main() {
 	vec3 albedo = texture(albedo_texture, vs_out.TexCoord).rgb;
 	float alpha = roughness * roughness;
@@ -78,7 +94,14 @@ void main() {
 	
 	vec3 brdf = diffuse + specular;
 	// TODO: HW8 - 2_Shadow | shadow
+
 	float visible = 1.0; // if the fragment is in shadow, set it to 0
+	if (have_shadow) {
+		// get coord in light space
+		vec4 coord_light_space = lightSpaceMatrix * vec4(vs_out.WorldPos, 1.0);
+		visible = ShadowCalculation(coord_light_space);
+	}
+	
 	vec3 Lo_direct = visible * brdf * point_light_radiance * max(cos_theta, 0) / dist2;
 	vec3 Lo_ambient = (1-metalness) * albedo / PI * ambient_irradiance;
 	vec3 Lo = Lo_direct + Lo_ambient;

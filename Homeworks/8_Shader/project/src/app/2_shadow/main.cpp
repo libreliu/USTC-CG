@@ -130,6 +130,10 @@ int main()
     gl::FrameBuffer shadowFB;
     shadowFB.Attach(gl::FramebufferAttachment::DepthAttachment, &shadowmap);
 
+    // (Necessary?)
+    //gl::DrawBuffer(GL_NONE);
+    //gl::ReadBuffer(GL_NONE);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -161,7 +165,31 @@ int main()
         // -------
         // ref: https://learnopengl-cn.github.io/05%20Advanced%20Lighting/03%20Shadows/01%20Shadow%20Mapping/
 
-        // ... (your codes)
+        //shadow_program.SetMatf4("model",
+        //    transformf{
+        //         std::array<float, 4 * 4>{
+        //           1,    0,    0,    0,
+        //           0,    1,    0,    0,
+        //           0,    0,    1,    0,
+        //           0,    0,    0,    1 }
+        //    });
+        auto light_view = transformf::look_at(pointf3(0.0f, 5.0f, 0.0f), pointf3(0.0f, 0.0f, 0.0f));
+        shadow_program.SetMatf4("view", light_view);
+
+        auto light_proj = transformf::perspective(to_radian(350.0f), 1.0f, 0.1f, 100.f);
+        shadow_program.SetMatf4("projection", light_proj);
+
+        auto lightSpaceMatrix = light_proj * light_view;
+
+        // draw cows!
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            // calculate the model matrix for each object and pass it to shader before drawing
+            float angle = 20.0f * i + 10.f * (float)glfwGetTime();
+            transformf model(instancePositions[i], quatf{ vecf3(1.0f, 0.3f, 0.5f), to_radian(angle) });
+            shadow_program.SetMatf4("model", model);
+            spot->va->Draw(&shadow_program);
+        }
 
         //=================================
 
@@ -185,6 +213,7 @@ int main()
 
         // TODO: HW8 - 2_Shadow | set uniforms about shadow
         light_shadow_program.SetBool("have_shadow", have_shadow);
+        light_shadow_program.SetMatf4("lightSpaceMatrix", lightSpaceMatrix);
         // near plane, far plane, projection, ...
 
         for (unsigned int i = 0; i < 10; i++)
@@ -233,7 +262,10 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(Camera::Movement::DOWN, deltaTime);
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        have_shadow = !have_shadow;
+        have_shadow = true;
+
+    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+        have_shadow = false;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

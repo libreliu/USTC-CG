@@ -12,7 +12,9 @@
 #include "../../tool/Camera.h"
 #include "../../tool/SimpleLoader.h"
 
+
 #include <iostream>
+#include "nanoflann.hpp"
 
 using namespace Ubpa;
 
@@ -40,6 +42,40 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+// point cloud
+template <typename T>
+struct PointCloud
+{
+    struct Point
+    {
+        T  x, y;
+        float disp;
+    };
+
+    std::vector<Point>  pts;
+
+    // Must return the number of data points
+    inline size_t kdtree_get_point_count() const { return pts.size(); }
+
+    // Returns the dim'th component of the idx'th point in the class:
+    // Since this is inlined and the "dim" argument is typically an immediate value, the
+    //  "if/else's" are actually solved at compile time.
+    inline T kdtree_get_pt(const size_t idx, const size_t dim) const
+    {
+        if (dim == 0) return pts[idx].x;
+        else return pts[idx].y;
+    }
+
+    // Optional bounding-box computation: return false to default to a standard bbox computation loop.
+    //   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
+    //   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
+    template <class BBOX>
+    bool kdtree_get_bbox(BBOX& /* bb */) const { return false; }
+
+};
+
+
 
 int main()
 {
@@ -161,6 +197,7 @@ int main()
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             float angle = 20.0f * i + 10.f * (float)glfwGetTime();
+            //float angle = 20.0f * i;
             transformf model(instancePositions[i], quatf{ vecf3(1.0f, 0.3f, 0.5f), to_radian(angle) });
             program.SetMatf4("model", model);
             spot->va->Draw(&program);
@@ -202,8 +239,27 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         camera.ProcessKeyboard(Camera::Movement::DOWN, deltaTime);
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        have_denoise = !have_denoise;
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+        displacement_lambda = -1;
+        printf("current lambda: %lf\n", displacement_lambda);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+        displacement_lambda = 1;
+        printf("current lambda: %lf\n", displacement_lambda);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+        have_denoise = false;
+        printf("Current denoise: %d\n", have_denoise);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        have_denoise = true;
+        printf("Current denoise: %d\n", have_denoise);
+    }
+       
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -279,12 +335,167 @@ gl::Texture2D loadTexture(char const* path)
 }
 
 gl::Texture2D genDisplacementmap(const SimpleLoader::OGLResources* resources) {
-    const float* displacementData = new float[1024 * 1024];
+    float* displacementData = new float[1024 * 1024];
+    memset((void *)displacementData, 0, sizeof(float) * 1024 * 1024);
     // TODO: HW8 - 1_denoise | genDisplacementmap
     // 1. set displacementData with resources's positions, indices, normals, ...
     // 2. change global variable: displacement_bias, displacement_scale, displacement_lambda
 
-    // ...
+    // auxiliary functions
+    auto findOrPush = [](std::vector<size_t>& v, int index) {
+        if (std::find(v.begin(), v.end(), index) == v.end()) {
+            v.push_back(index);
+        }
+    };
+
+    auto getNeighbor = [&](int vec) {
+        std::vector<size_t> neighbors;
+        size_t total_triangles = resources->indices.size() / 3;
+        for (size_t i = 0; i < total_triangles; i++) {
+            if (vec == resources->indices[i * 3]) {
+                findOrPush(neighbors, resources->indices[i * 3 + 1]);
+                findOrPush(neighbors, resources->indices[i * 3 + 2]);
+            }
+            else if (vec == resources->indices[i * 3 + 1]) {
+                findOrPush(neighbors, resources->indices[i * 3]);
+                findOrPush(neighbors, resources->indices[i * 3 + 2]);
+            }
+            else if (vec == resources->indices[i * 3 + 2]) {
+                findOrPush(neighbors, resources->indices[i * 3]);
+                findOrPush(neighbors, resources->indices[i * 3 + 1]);
+            }
+        }
+        return neighbors;
+    };
+
+    // 1. calculate delta of all vertices
+    std::vector<float> offsets;
+    int total_vertices = resources->positions.size();
+    for (size_t i = 0; i < total_vertices; i++) {
+
+#ifdef ZT_DBG
+        printf("Processing %d\n", i);
+
+        auto pos_self = resources->positions[i];
+        printf("pos_self: (%lf, %lf, %lf)\n", pos_self[0], pos_self[1], pos_self[2]);
+#endif
+
+        // find neighbour vertices
+        auto neighbors = getNeighbor(i);
+
+#ifdef ZT_DBG
+        printf("Neighbors: ");
+        for (auto m : neighbors) {
+            printf("%d ", m);
+        }
+        printf("\n");
+
+#endif
+        size_t num_neighbors = neighbors.size();
+
+        assert(neighbors.size() > 0);
+        vecf3 offset = resources->positions[i].cast_to<vecf3>();
+
+        for (auto neighbor : neighbors) {
+            offset -= (1.0f / num_neighbors) * resources->positions[neighbor].cast_to<vecf3>();
+        }
+#ifdef ZT_DBG
+        printf("offset: (%lf, %lf, %lf)\n", offset[0], offset[1], offset[2]);
+#endif
+        // project to normal
+        // todo: figure out why we can't use normal?
+        offsets.push_back(offset.dot(resources->normals[i].cast_to<vecf3>()));
+    }
+#ifdef ZT_DBG
+    for (auto offset : offsets) {
+        printf("%lf  ", offset);
+    }
+#endif
+    std::cout << std::endl;
+
+    // 2. get min and max of all offsets
+    float min_offset = offsets[0];
+    float max_offset = offsets[0];
+
+    for (size_t i = 0; i < total_vertices; i++) {
+        if (offsets[i] < min_offset) {
+            min_offset = offsets[i];
+        }
+        else if (offsets[i] > max_offset) {
+            max_offset = offsets[i];
+        }
+    }
+
+    std::cout << "offset: " << min_offset << " " << max_offset << std::endl;
+    // [0, 1] -> [min_offset, max_offset]
+    displacement_bias = min_offset;
+    displacement_scale = max_offset - min_offset;
+
+    PointCloud<int> cloud;
+    std::map<pointi2, size_t> rev_map;
+    cloud.pts.resize(total_vertices);
+
+    // 3. find apporpriate map from vertices to uv coords - done by texture coords
+    for (size_t i = 0; i < total_vertices; i++) {
+        
+        // coord: [0, 1] -> [0, 1023]
+        // value: [0, 1]
+        pointf2 texcoord = resources->texcoords[i];
+        vecf2 real_coord = texcoord.cast_to<vecf2>() * 1023;
+
+        // add into point cloud
+        cloud.pts[i].x = (int)floor(real_coord[0]);
+        cloud.pts[i].y = (int)floor(real_coord[1]);
+        cloud.pts[i].disp = (offsets[i] - min_offset) / displacement_scale;
+
+        displacementData[cloud.pts[i].x + cloud.pts[i].y * 1024] =
+            cloud.pts[i].disp;
+
+        // add into map
+        rev_map.insert(std::make_pair(pointi2(cloud.pts[i].x, cloud.pts[i].y), i));
+    }
+
+    // build kd-tree
+    typedef nanoflann::KDTreeSingleIndexAdaptor<
+        nanoflann::L2_Simple_Adaptor<int, PointCloud<int>, double>,
+        PointCloud<int>,
+        2 /* dim */
+    > my_kd_tree_t;
+
+    my_kd_tree_t   index(2 /*dim*/, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(10 /* max leaf */));
+    index.buildIndex();
+
+
+
+    // interpolate remaining
+    for (size_t u = 0; u < 1024; u++) {
+        for (size_t v = 0; v < 1024; v++) {
+            if (rev_map.find(pointi2(u, v)) == rev_map.end()) {
+                // do kd-tree search, find 2 nearest neighbor and do interpolation
+                size_t num_neighbors = 10;
+                nanoflann::KNNResultSet<double> resultSet(num_neighbors);
+                std::vector<size_t> ret_index(num_neighbors);
+                std::vector<double> out_dist_sqr(num_neighbors);
+
+                int query_pt[2] = { u, v };
+                num_neighbors = index.knnSearch(&query_pt[0], num_neighbors, &ret_index[0], &out_dist_sqr[0]);
+
+                //std::cout << "knnSearch(nn=2): \n";
+                //std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << std::endl;
+
+                double total_dist = 0;
+                for (size_t i = 0; i < num_neighbors; i++) {
+                    total_dist += out_dist_sqr[i];
+                }
+                displacementData[u + v * 1024] = 0;
+                for (size_t i = 0; i < num_neighbors; i++) {
+                    displacementData[u + v * 1024] +=
+                        (out_dist_sqr[i] / total_dist) * cloud.pts[ret_index[i]].disp;
+                }
+            }
+        }
+    }
+
 
     gl::Texture2D displacementmap;
     displacementmap.SetImage(0, gl::PixelDataInternalFormat::Red, 1024, 1024, gl::PixelDataFormat::Red, gl::PixelDataType::Float, displacementData);
