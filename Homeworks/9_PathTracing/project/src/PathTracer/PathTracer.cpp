@@ -33,7 +33,11 @@ PathTracer::PathTracer(const Scene* scene, const SObj* cam_obj, Image* img)
 void PathTracer::Run() {
 	img->SetAll(0.f);
 
+#ifndef NDEBUG
 	const size_t spp = 2; // samples per pixel
+#else
+	const size_t spp = 128;
+#endif
 
 #ifdef NDEBUG
 	const size_t core_num = std::thread::hardware_concurrency();
@@ -158,14 +162,14 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 			float V = 1;
 			auto light_path_intersection = 
 				IntersectorClosest::Instance().Visit(
-					&bvh, rayf3(intersection.pos, wi, EPSILON<float>, dist_y_x - EPSILON<float>));
+					&bvh, rayf3(intersection.pos, wi, 2 * EPSILON<float>, dist_y_x - 2 * EPSILON<float>));
 			if (light_path_intersection.IsIntersected()) {
 				V = 0;
 			}
 
 			float cos_theta_yx = (-y_x).cos_theta(sample_light_rst.n.cast_to<vecf3>());
 			float cos_theta_xy = y_x.cos_theta(intersection.n.cast_to<vecf3>());
-			vecf3 G = V * std::abs(cos_theta_xy * cos_theta_yx) / y_x.norm2();
+			vecf3 G = V * std::abs(cos_theta_xy * cos_theta_yx) / y_x.norm2() * sample_light_rst.pd;
 
 			rgbf f_r = this->BRDF(intersection, wi, wo);
 			
@@ -175,6 +179,28 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 
 	// TODO: Russian Roulette
 	// - rand01<float>() : random in [0, 1)
+	// **TODO: adjust**
+	float pdf_rr = rand01<float>();
+	if (pdf_rr > 0.9) {
+		return L_dir;
+	}
+
+	// wi, pdf
+	std::tuple<vecf3, float> brdf_res = SampleBRDF(intersection, wo);
+
+	// emit a brand new ray
+	auto higher_order_intersection =
+		IntersectorClosest::Instance().Visit(
+			&bvh, rayf3(intersection.pos, std::get<0>(brdf_res), EPSILON<float>));
+	auto higher_order_L_r = Shade(higher_order_intersection, -std::get<0>(brdf_res), true);
+
+	//auto n_p' = higher_order_intersection.n;
+	//auto higher_order_pos = higher_order_intersection.pos;
+
+	float cos_theta_wi_np = (std::get<0>(brdf_res)).cos_theta(intersection.n.cast_to<vecf3>());
+	rgbf f_r = this->BRDF(intersection, std::get<0>(brdf_res), wo);
+
+	L_indir = f_r * higher_order_L_r * cos_theta_wi_np / std::get<1>(brdf_res) / pdf_rr;
 
 	// TODO: recursion
 	// - use PathTracer::SampleBRDF to get wi and pd (probability density)
@@ -182,7 +208,7 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 	// - use PathTracer::BRDF to get BRDF value
 
 	// TODO: combine L_dir and L_indir
-	return L_dir;
+	return L_dir + L_indir;
 
 	return todo_color; // you should commemt this line
 }
