@@ -36,7 +36,7 @@ void PathTracer::Run() {
 #ifndef NDEBUG
 	const size_t spp = 2; // samples per pixel
 #else
-	const size_t spp = 128;
+	const size_t spp = 200;
 #endif
 
 #ifdef NDEBUG
@@ -149,6 +149,16 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 			// TODO: L_dir of environment light
 			// - only use SampleLightResult::L, n, pd
 			// - SampleLightResult::x is useless
+
+			// light - surface pos
+			vecf3 wi = -sample_light_rst.n.cast_to<vecf3>();
+
+			float cos_theta_xy = wi.cos_theta(intersection.n.cast_to<vecf3>());
+			vecf3 G = std::abs(cos_theta_xy) / sample_light_rst.pd;
+
+			rgbf f_r = this->BRDF(intersection, wi, wo);
+			
+			L_dir += f_r * sample_light_rst.L * G.cast_to<rgbf>();
 		}
 		else {
 			// TODO: L_dir of area light
@@ -160,10 +170,10 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 
 			// Check for visibility
 			float V = 1;
-			auto light_path_intersection = 
-				IntersectorClosest::Instance().Visit(
+			bool light_path_intersection = 
+				IntersectorVisibility::Instance().Visit(
 					&bvh, rayf3(intersection.pos, wi, 2 * EPSILON<float>, dist_y_x - 2 * EPSILON<float>));
-			if (light_path_intersection.IsIntersected()) {
+			if (!light_path_intersection) {
 				V = 0;
 			}
 
@@ -180,27 +190,52 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 	// TODO: Russian Roulette
 	// - rand01<float>() : random in [0, 1)
 	// **TODO: adjust**
-	float pdf_rr = rand01<float>();
-	if (pdf_rr > 0.9) {
+	float pdf_thres = 0.5;
+	if (rand01<float>() > pdf_thres) {
 		return L_dir;
 	}
 
 	// wi, pdf
 	std::tuple<vecf3, float> brdf_res = SampleBRDF(intersection, wo);
 
+	auto wi = std::get<0>(brdf_res);
+
+	//static int counter_1 = 0;
+	//static int counter_2 = 0;
+	if (wi.cos_theta(intersection.n.cast_to<vecf3>()) < 0) {
+		//counter_1++;
+		return L_dir;
+	}
+	else {
+		//counter_2++;
+
+	}
+	//printf("C1: %d, C2: %d\n", counter_1, counter_2);
+
 	// emit a brand new ray
 	auto higher_order_intersection =
 		IntersectorClosest::Instance().Visit(
-			&bvh, rayf3(intersection.pos, std::get<0>(brdf_res), EPSILON<float>));
-	auto higher_order_L_r = Shade(higher_order_intersection, -std::get<0>(brdf_res), true);
+			&bvh, rayf3(intersection.pos, wi, EPSILON<float>));
+
+	rgbf higher_order_L_r;
+
+	if (!higher_order_intersection.IsIntersected()) {
+		higher_order_L_r = rgbf(0.0, 0.0, 0.0);
+	}
+	else if (!higher_order_intersection.sobj->Get<Cmpt::Material>()) {
+		higher_order_L_r = rgbf(0.0, 0.0, 0.0);
+	}
+	else {
+		higher_order_L_r = Shade(higher_order_intersection, -wi, true);
+	}
 
 	//auto n_p' = higher_order_intersection.n;
 	//auto higher_order_pos = higher_order_intersection.pos;
 
-	float cos_theta_wi_np = (std::get<0>(brdf_res)).cos_theta(intersection.n.cast_to<vecf3>());
-	rgbf f_r = this->BRDF(intersection, std::get<0>(brdf_res), wo);
+	float cos_theta_wi_np = (wi).cos_theta(intersection.n.cast_to<vecf3>());
+	rgbf f_r = this->BRDF(intersection, wi, wo);
 
-	L_indir = f_r * higher_order_L_r * cos_theta_wi_np / std::get<1>(brdf_res) / pdf_rr;
+	L_indir = f_r * higher_order_L_r * cos_theta_wi_np / std::get<1>(brdf_res) / pdf_thres;
 
 	// TODO: recursion
 	// - use PathTracer::SampleBRDF to get wi and pd (probability density)
