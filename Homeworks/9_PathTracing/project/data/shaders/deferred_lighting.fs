@@ -393,7 +393,7 @@ float _LTC_Evaluate(vec3 N, vec3 V, vec3 P, mat3 invM, RectLight light) {
 	_LTC_ClipQuadToHorizon(L, n);
 
 	if (n == 0)
-		return 0;
+		return 0.0;
 	// project onto sphere
 	L[0] = normalize(L[0]);
 	L[1] = normalize(L[1]);

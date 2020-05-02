@@ -107,8 +107,8 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 	if (!intersection.IsIntersected()) {
 		if (last_bounce_specular && env_light != nullptr) {
 			// TODO: environment light
-
-			return todo_color;
+			return env_light->Radiance(wo);
+			//return todo_color;
 		}
 		else
 			return zero_color;
@@ -124,7 +124,10 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 
 			// TODO: area light
 
-			return todo_color;
+			return area_light->RadianceFactor() 
+				* area_light->Radiance(intersection.uv);
+
+			//return todo_color;
 		}else
 			return zero_color;
 	}
@@ -145,6 +148,28 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 		}
 		else {
 			// TODO: L_dir of area light
+			
+			// light - surface pos
+			vecf3 y_x = sample_light_rst.x - intersection.pos;
+			float dist_y_x = std::sqrt(y_x.norm2());
+			vecf3 wi = y_x.normalize();
+
+			// Check for visibility
+			float V = 1;
+			auto light_path_intersection = 
+				IntersectorClosest::Instance().Visit(
+					&bvh, rayf3(intersection.pos, wi, EPSILON<float>, dist_y_x - EPSILON<float>));
+			if (light_path_intersection.IsIntersected()) {
+				V = 0;
+			}
+
+			float cos_theta_yx = (-y_x).cos_theta(sample_light_rst.n.cast_to<vecf3>());
+			float cos_theta_xy = y_x.cos_theta(intersection.n.cast_to<vecf3>());
+			vecf3 G = V * std::abs(cos_theta_xy * cos_theta_yx) / y_x.norm2();
+
+			rgbf f_r = this->BRDF(intersection, wi, wo);
+			
+			L_dir += f_r * sample_light_rst.L * G.cast_to<rgbf>();
 		}
 	});
 
@@ -157,6 +182,7 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 	// - use PathTracer::BRDF to get BRDF value
 
 	// TODO: combine L_dir and L_indir
+	return L_dir;
 
 	return todo_color; // you should commemt this line
 }
