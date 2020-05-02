@@ -30,9 +30,9 @@ void Cmpt::PathTracerAgency::OnUpdate(const Cmpt::Camera* cam, const Cmpt::L2W* 
 		ptr->value->AddCommand([sobj = ptr->value.get(), ar]() {
 			thread ptThread([sobj, ar]() {
 #ifdef NDEBUG
-				size_t width = 400;
+				size_t width = 1024;
 #else
-				size_t width = 1080;
+				size_t width = 400;
 #endif
 				auto height = static_cast<size_t>(width / ar);
 				Image img(width, height, 3);

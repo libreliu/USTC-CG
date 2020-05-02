@@ -28,6 +28,28 @@ PathTracer::PathTracer(const Scene* scene, const SObj* cam_obj, Image* img)
 	});
 
 	// TODO: preprocess env_light here
+	const int env_prob_granularity = 100;
+	float* env_prob_distr = (float*)malloc(sizeof(float) * env_prob_granularity * env_prob_granularity);
+	memset(env_prob_distr, 0, sizeof(float) * env_prob_granularity * env_prob_granularity);
+
+	float weight_total = 0;
+	for (int i = 0; i < env_prob_granularity; i++) {
+		for (int j = 0; j < env_prob_granularity; j++) {
+			float illu = env_light->texture->Sample(
+							pointf2{ (float)i / env_prob_granularity, (float)j / env_prob_granularity }
+							).to_rgb().illumination();
+			env_prob_distr[i * env_prob_granularity + j] = illu;
+
+			weight_total += illu;
+		}
+	}
+
+	// p_img(i, j)
+	for (int i = 0; i < env_prob_granularity; i++) {
+		for (int j = 0; j < env_prob_granularity; j++) {
+			env_prob_distr[i * env_prob_granularity + j] /= weight_total;
+		}
+	}
 }
 
 void PathTracer::Run() {
@@ -36,7 +58,7 @@ void PathTracer::Run() {
 #ifndef NDEBUG
 	const size_t spp = 2; // samples per pixel
 #else
-	const size_t spp = 200;
+	const size_t spp = 256;
 #endif
 
 #ifdef NDEBUG
@@ -176,6 +198,17 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 			if (!light_path_intersection) {
 				V = 0;
 			}
+			//else if (std::abs((-wi).cos_theta(intersection.n.cast_to<vecf3>())) < 0.5) {
+			//	V = 0;
+			//}
+			else if ((-wi).cos_theta(sample_light_rst.n.cast_to<vecf3>()) < 0) {
+				V = 0;
+			}
+
+			//else if (wi.cos_theta(intersection.n.cast_to<vecf3>()) < 0.5
+			//	&& vecf3{ 0.0f, 1.0f, 0.0f }.cos_theta(intersection.n.cast_to<vecf3>()) < 0.95) {
+			//	V = 0;
+			//}
 
 			float cos_theta_yx = (-y_x).cos_theta(sample_light_rst.n.cast_to<vecf3>());
 			float cos_theta_xy = y_x.cos_theta(intersection.n.cast_to<vecf3>());
@@ -219,15 +252,7 @@ rgbf PathTracer::Shade(const IntersectorClosest::Rst& intersection, const vecf3&
 
 	rgbf higher_order_L_r;
 
-	if (!higher_order_intersection.IsIntersected()) {
-		higher_order_L_r = rgbf(0.0, 0.0, 0.0);
-	}
-	else if (!higher_order_intersection.sobj->Get<Cmpt::Material>()) {
-		higher_order_L_r = rgbf(0.0, 0.0, 0.0);
-	}
-	else {
-		higher_order_L_r = Shade(higher_order_intersection, -wi, true);
-	}
+	higher_order_L_r = Shade(higher_order_intersection, -wi, false);
 
 	//auto n_p' = higher_order_intersection.n;
 	//auto higher_order_pos = higher_order_intersection.pos;
@@ -291,9 +316,14 @@ PathTracer::SampleLightResult PathTracer::SampleLight(IntersectorClosest::Rst in
 			tie(wi, pd_mat) = SampleBRDF(intersection, wo);
 			Le = env_light->Radiance(wi);
 			pd_env = env_light->PDF(wi, intersection.n); // TODO: use your PDF
+			//pd_env = 
+
 		}
 		else {
 			tie(Le, wi, pd_env) = env_light->Sample(intersection.n); // TODO: use your sampling method
+
+			//// use my sampling
+
 			matf3 surface_to_world = svecf::TBN(intersection.n.cast_to<vecf3>(), intersection.tangent);
 			matf3 world_to_surface = surface_to_world.inverse();
 			svecf s_wo = (world_to_surface * wo).cast_to<svecf>();
